@@ -1,4 +1,4 @@
-Project Name 
+Project Name
 ==============================
 
 This project is a starting Pack for MLOps projects based on the subject "movie_recommandation". It's not perfect so feel free to make some modifications on it.
@@ -34,6 +34,8 @@ Project Organization
     │   ├── __init__.py    <- Makes src a Python module
     │   │
     │   ├── data           <- Scripts to download or generate data
+    │   │   ├── check_structure.py    
+    │   │   ├── import_raw_data.py 
     │   │   └── make_dataset.py
     │   │
     │   ├── features       <- Scripts to turn raw data into features for modeling
