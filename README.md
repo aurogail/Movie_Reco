@@ -52,4 +52,42 @@ Project Organization
 
 --------
 
+## Steps to follow 
+
+Convention : All python scripts must be run from the root specifying the relative file path.
+
+### 1- Create a virtual environment using Virtualenv.
+
+    `python -m venv my_env`
+
+###   Activate it 
+
+    `./my_env/Scripts/activate`
+
+###   Install the packages from requirements.txt  (You can ignore the warning with "setup.py")
+
+    `pip install -r .\requirements.txt`
+
+### 2- Execute import_raw_data.py to import the 4 datasets (say yes when it asks you to create a new folder)
+
+    `python .\src\data\import_raw_data.py` 
+
+### 3- Execute make_dataset.py initializing `./data/raw` as input file path and `./data/processed` as output file path.
+
+    `python .\src\data\make_dataset.py`
+
+### 4- Execute build_features.py to preprocess the data (this can take a while)
+
+    `python .\src\features\build_features.py`
+
+### 5- Execute train_model.py to train the model
+
+    `python .\src\models\train_model.py`
+
+### 5- Finally, execute predict_model.py file to make the predictions (by default you will be printed predictions for the first 5 users of the dataset). 
+
+    `python .\src\models\predict_model.py`
+
+### Note that we have 10 recommandations per user
+
 <p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
