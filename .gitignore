@@ -7,6 +7,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+my_env/
 env/
 build/
 develop-eggs/
@@ -62,6 +63,7 @@ target/
 # Database
 *.db
 *.rdb
+*.csv
 
 # Pycharm
 .idea

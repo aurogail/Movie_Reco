@@ -11,3 +11,8 @@ python-dotenv>=0.5.1
 pandas
 scikit-learn
 pickle
+requests
+click
+python-dotenv
+pandas
+scikit-learn
