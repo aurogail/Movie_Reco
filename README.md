@@ -55,6 +55,7 @@ Project Organization
 ## Steps to follow 
 
 Convention : All python scripts must be run from the root specifying the relative file path.
+[Update Charles]: To make it work, I had to execute the line commands from src directory
 
 ### 1- Create a virtual environment using Virtualenv.
 
@@ -70,23 +71,23 @@ Convention : All python scripts must be run from the root specifying the relativ
 
 ### 2- Execute import_raw_data.py to import the 4 datasets (say yes when it asks you to create a new folder)
 
-    `python .\src\data\import_raw_data.py` 
+    `python .\data\import_raw_data.py` 
 
 ### 3- Execute make_dataset.py initializing `./data/raw` as input file path and `./data/processed` as output file path.
 
-    `python .\src\data\make_dataset.py`
+    `python .\data\make_dataset.py`
 
 ### 4- Execute build_features.py to preprocess the data (this can take a while)
 
-    `python .\src\features\build_features.py`
+    `python .\features\build_features.py`
 
 ### 5- Execute train_model.py to train the model
 
-    `python .\src\models\train_model.py`
+    `python .\models\train_model.py`
 
 ### 5- Finally, execute predict_model.py file to make the predictions (by default you will be printed predictions for the first 5 users of the dataset). 
 
-    `python .\src\models\predict_model.py`
+    `python .\models\predict_model.py`
 
 ### Note that we have 10 recommandations per user
 
