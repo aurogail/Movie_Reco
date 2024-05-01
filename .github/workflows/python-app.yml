@@ -5,7 +5,7 @@ name: Python application
 
 on:
   push:
-    branches: [ "master", "cdv_fix_init" ]
+    branches: [ "master", "cdv_fix_init", "cdv_unit_tests" ]
   pull_request:
     branches: [ "master" ]
 
