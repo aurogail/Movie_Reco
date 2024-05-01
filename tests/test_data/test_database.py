@@ -7,6 +7,7 @@ current_time = datetime.now()
 current_ts = current_time.timestamp()
 min_expected_ts = datetime(1995, 1, 1, 0, 0, 0).timestamp()           # we don't expect data prior to 1995
 
+
 def test_database_exists():
     """ Checks that the database exists"""
 
