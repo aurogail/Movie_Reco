@@ -94,5 +94,5 @@ Convention : All python scripts must be run from the root specifying the relativ
 <p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
 
 
-### Launch API, in the directory src/api_directory
+### Launch API from project_root
 uvicorn src.api_directory.api:app --reload
