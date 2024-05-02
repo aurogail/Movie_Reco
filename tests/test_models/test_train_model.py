@@ -1,6 +1,6 @@
-import sys
+#import sys
 import pandas as pd
-sys.path.append('src')
+#sys.path.append('src')
 
 from models.train_model import train_model
 

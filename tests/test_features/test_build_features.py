@@ -1,7 +1,7 @@
-import sys
+# import sys
 import pandas as pd
 from pandas.testing import assert_frame_equal
-sys.path.append('src')
+# sys.path.append('src')
 
 from features.build_features import read_movies, create_user_matrix
 

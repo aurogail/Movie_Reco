@@ -17,3 +17,9 @@ python-dotenv
 pandas
 scikit-learn
 pytest
+fastapi
+httpx
+# jwt ?
+pyjwt
+httptools==0.1.* 
+uvicorn

@@ -32,6 +32,12 @@ Project Organization
     │
     ├── src                <- Source code for use in this project.
     │   ├── __init__.py    <- Makes src a Python module
+    │   ├── api_directory  <- Scripts to execute the API
+    │   │   ├── api_requirements.txt    
+    │   │   ├── api.py 
+    │   │   ├── generate_token.py 
+    │   │   ├── preferences.py 
+    │   │   └── requests.txt  
     │   │
     │   ├── data           <- Scripts to download or generate data
     │   │   ├── check_structure.py    
@@ -49,6 +55,9 @@ Project Organization
     │   ├── visualization  <- Scripts to create exploratory and results oriented visualizations
     │   │   └── visualize.py
     │   └── config         <- Describe the parameters used in train_model.py and predict_model.py
+    │
+    ├── tests              <- Unit tests
+    
 
 --------
 
@@ -92,3 +101,7 @@ Convention : All python scripts must be run from the root specifying the relativ
 ### Note that we have 10 recommandations per user
 
 <p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
+
+
+### Launch API from project_root
+uvicorn src.api_directory.api:app --reload
