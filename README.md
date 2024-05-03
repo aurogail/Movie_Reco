@@ -32,6 +32,12 @@ Project Organization
     │
     ├── src                <- Source code for use in this project.
     │   ├── __init__.py    <- Makes src a Python module
+    │   ├── api_directory  <- Scripts to execute the API
+    │   │   ├── api_requirements.txt    
+    │   │   ├── api.py 
+    │   │   ├── generate_token.py 
+    │   │   ├── preferences.py 
+    │   │   └── requests.txt  
     │   │
     │   ├── data           <- Scripts to download or generate data
     │   │   ├── check_structure.py    
@@ -49,12 +55,16 @@ Project Organization
     │   ├── visualization  <- Scripts to create exploratory and results oriented visualizations
     │   │   └── visualize.py
     │   └── config         <- Describe the parameters used in train_model.py and predict_model.py
+    │
+    ├── tests              <- Unit tests
+    
 
 --------
 
 ## Steps to follow 
 
 Convention : All python scripts must be run from the root specifying the relative file path.
+[Update Charles]: To make it work, I had to execute the line commands from src directory
 
 ### 1- Create a virtual environment using Virtualenv.
 
@@ -70,24 +80,46 @@ Convention : All python scripts must be run from the root specifying the relativ
 
 ### 2- Execute import_raw_data.py to import the 4 datasets (say yes when it asks you to create a new folder)
 
-    `python .\src\data\import_raw_data.py` 
+    `python .\data\import_raw_data.py` 
 
 ### 3- Execute make_dataset.py initializing `./data/raw` as input file path and `./data/processed` as output file path.
 
-    `python .\src\data\make_dataset.py`
+    `python .\data\make_dataset.py`
 
 ### 4- Execute build_features.py to preprocess the data (this can take a while)
 
-    `python .\src\features\build_features.py`
+    `python .\features\build_features.py`
 
 ### 5- Execute train_model.py to train the model
 
-    `python .\src\models\train_model.py`
+    `python .\models\train_model.py`
 
 ### 5- Finally, execute predict_model.py file to make the predictions (by default you will be printed predictions for the first 5 users of the dataset). 
 
-    `python .\src\models\predict_model.py`
+    `python .\models\predict_model.py`
 
 ### Note that we have 10 recommandations per user
 
 <p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
+
+
+# To launch the API
+
+For now, you need to be in project_root, and execute the following command line:
+    `uvicorn src.api_directory.api:app --reload`
+
+Example of possible requests: 
+# /login
+`curl -X POST "http://localhost:8000/login" -H "Content-Type: application/json" -d '{"user_id": 123}'`
+
+# /welcome
+`curl -X GET "http://localhost:8000/welcome" -H "Authorization: Bearer <token>"`
+
+# /recommendations
+`curl -X GET "http://localhost:8000/recommendations" -H "Authorization: Bearer <token>"`
+
+# /preferences
+`curl -X GET "http://localhost:8000/preferences" -H "Authorization: Bearer <token>"`
+
+# /content_reco
+`curl -X POST "http://localhost:8000/content_reco" -H "Authorization: Bearer <token>" -H "Content-Type: application/json" -d '{"titre": "The Dark Knight", "mat_sim": "cosinus"}`'
