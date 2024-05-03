@@ -103,5 +103,23 @@ Convention : All python scripts must be run from the root specifying the relativ
 <p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
 
 
-### Launch API from project_root
-uvicorn src.api_directory.api:app --reload
+# To launch the API
+
+For now, you need to be in project_root, and execute the following command line:
+    `uvicorn src.api_directory.api:app --reload`
+
+Example of possible requests: 
+# /login
+`curl -X POST "http://localhost:8000/login" -H "Content-Type: application/json" -d '{"user_id": 123}'`
+
+# /welcome
+`curl -X GET "http://localhost:8000/welcome" -H "Authorization: Bearer <token>"`
+
+# /recommendations
+`curl -X GET "http://localhost:8000/recommendations" -H "Authorization: Bearer <token>"`
+
+# /preferences
+`curl -X GET "http://localhost:8000/preferences" -H "Authorization: Bearer <token>"`
+
+# /content_reco
+`curl -X POST "http://localhost:8000/content_reco" -H "Authorization: Bearer <token>" -H "Content-Type: application/json" -d '{"titre": "The Dark Knight", "mat_sim": "cosinus"}`'
