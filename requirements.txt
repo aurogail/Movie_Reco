@@ -16,4 +16,10 @@ python-dotenv
 pandas
 scikit-surprise
 pytest
-psycopg2-binary 
+psycopg2-binary
+fastapi
+httpx
+pyjwt
+httptools==0.1.* 
+uvicorn
+

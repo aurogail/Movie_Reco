@@ -32,6 +32,12 @@ Project Organization
     │
     ├── src                <- Source code for use in this project.
     │   ├── __init__.py    <- Makes src a Python module
+    │   ├── api_directory  <- Scripts to execute the API
+    │   │   ├── api_requirements.txt    
+    │   │   ├── api.py 
+    │   │   ├── generate_token.py 
+    │   │   ├── preferences.py 
+    │   │   └── requests.txt  
     │   │
     │   ├── data           <- Scripts to download or generate data
     │   │   ├── check_structure.py    
@@ -49,6 +55,9 @@ Project Organization
     │   ├── visualization  <- Scripts to create exploratory and results oriented visualizations
     │   │   └── visualize.py
     │   └── config         <- Describe the parameters used in train_model.py and predict_model.py
+    │
+    ├── tests              <- Unit tests
+    
 
 --------
 
@@ -92,3 +101,25 @@ Convention : All python scripts must be run from the root specifying the relativ
 ### Note that we have 10 recommandations per user
 
 <p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
+
+
+# To launch the API
+
+For now, you need to be in project_root, and execute the following command line:
+    `uvicorn src.api_directory.api:app --reload`
+
+Example of possible requests: 
+# /login
+`curl -X POST "http://localhost:8000/login" -H "Content-Type: application/json" -d '{"user_id": 123}'`
+
+# /welcome
+`curl -X GET "http://localhost:8000/welcome" -H "Authorization: Bearer <token>"`
+
+# /recommendations
+`curl -X GET "http://localhost:8000/recommendations" -H "Authorization: Bearer <token>"`
+
+# /preferences
+`curl -X GET "http://localhost:8000/preferences" -H "Authorization: Bearer <token>"`
+
+# /content_reco
+`curl -X POST "http://localhost:8000/content_reco" -H "Authorization: Bearer <token>" -H "Content-Type: application/json" -d '{"titre": "The Dark Knight", "mat_sim": "cosinus"}`'
