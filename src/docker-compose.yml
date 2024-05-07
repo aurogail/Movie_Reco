@@ -1,6 +1,20 @@
 version: "3"
 
 services:
+
+  rclone:
+    image: rclone/rclone
+    volumes:
+      - ./config:/config/rclone  # Local path to Rclone config directory
+      - ./data/db/postgresql:/data             # Local path to the data you want to transfer
+    command: config
+    #copy remote:path /data   # Rclone command (modify accordingly)
+    tty: true                    # Allocate a pseudo-TTY
+    stdin_open: true             # Keep stdin open
+  
+  recofilm:
+    image: chvalois/recofilm:0.1
+  
   postgres:
     image: postgres:alpine3.19
     ports:
@@ -8,4 +22,4 @@ services:
     env_file:
       - .env
     volumes:
-      - ~/data/db:/var/lib/postgresql/data
+      - ./data/db/postgresql:/var/lib/postgresql/data
