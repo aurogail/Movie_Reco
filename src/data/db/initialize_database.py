@@ -23,12 +23,14 @@ def sql(query):
         conn.execute(text(query))
 
 def execute_pgsql_query(filename):
+    """ Executes a SQL Query in the SQL Alchemy Engine """
     with open(filename, 'r') as file:
         query = file.read()
     sql(query)
 
 
 def init_csv_to_sql(table_name, csv_path, mapping):
+    """ Creates a table in the postgresDB from a CSV file"""
     df = pd.read_csv(csv_path)
     df = df.rename(columns = mapping)
     #df = df.head(100000)
@@ -43,6 +45,7 @@ def init_csv_to_sql(table_name, csv_path, mapping):
         print(f'Injection of table {table_name} failed')
 
 def create_initial_users():
+    """ Create the table 'users' in the postgresDB """
     users = pd.read_csv('../raw/ratings.csv')
     users = users.drop(columns = {'movieId', 'rating', 'timestamp'})
     users = users.drop_duplicates()

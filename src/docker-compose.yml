@@ -5,21 +5,39 @@ services:
   rclone:
     image: rclone/rclone
     volumes:
-      - ./config:/config/rclone  # Local path to Rclone config directory
-      - ./data/db/postgresql:/data             # Local path to the data you want to transfer
+      - ./config:/config/rclone         # Local path to Rclone config directory
+      - ./data/db/postgresql:/data      # Local path to the data you want to transfer
     command: config
-    #copy remote:path /data   # Rclone command (modify accordingly)
-    tty: true                    # Allocate a pseudo-TTY
-    stdin_open: true             # Keep stdin open
-  
-  recofilm:
-    image: chvalois/recofilm:0.1
-  
+    #command: ["copyto", "recofilm4:recofilm_db/recofilm_db_backup.sql", "recofilm_gdrive.sql", "-vv"]
+    tty: true                           # Allocate a pseudo-TTY
+    stdin_open: true                    # Keep stdin open
+    healthcheck:
+      test: ["CMD", "test", "-f", "/data/recofilm_gdrive.sql"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   postgres:
     image: postgres:alpine3.19
+    depends_on:
+        rclone:
+          condition: service_healthy
     ports:
       - 5432:5432
+    #command: ["pg_restore", "-U", "admin", "-d", "recofilm_db", "-F", "c", "var/lib/postgresql/data/recofilm_gdrive.sql"]
     env_file:
       - .env
     volumes:
       - ./data/db/postgresql:/var/lib/postgresql/data
+    # healthcheck:
+    #   test: ["CMD", "pg_isready", "-U", "airflow"]
+    #   interval: 5s
+    #   retries: 5
+
+  recofilm:
+    image: chvalois/recofilm:0.1
+    healthcheck:
+      test: ["CMD", "ls"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
