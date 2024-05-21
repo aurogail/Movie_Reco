@@ -1,8 +1,8 @@
 import pytest
 import pandas as pd
 from fastapi.testclient import TestClient
-from api_directory.api import app
-from api_directory.generate_token import load_user_ids
+from src.api_directory.api import app
+from src.api_directory.generate_token import load_user_ids
 
 
 client = TestClient(app)

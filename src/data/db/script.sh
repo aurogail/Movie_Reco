@@ -5,3 +5,5 @@ pg_restore -U admin -d recofilm_db -C -F c var/lib/postgresql/data/recofilm_db_b
 
 # if recofilm_db created
 pg_restore -U admin -d recofilm_db -F c var/lib/postgresql/data/recofilm_db_backup.sql
+
+pg_restore -U admin -d recofilm_db -F c var/lib/postgresql/data/recofilm_gdrive.sql

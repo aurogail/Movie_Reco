@@ -54,7 +54,6 @@ CREATE TABLE genome_scores (
     FOREIGN KEY (gtag_id) REFERENCES genome_tags(gtag_id)
 );
 
-
 CREATE TABLE predicted_ratings (
     pred_id             SERIAL PRIMARY KEY,
     rating_id           INTEGER,

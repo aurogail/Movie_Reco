@@ -1,15 +1,96 @@
 import os
 import pandas as pd
 from datetime import datetime
+from sqlalchemy import inspect
+from src.data.db.database_functions import get_engine
 
 path = "src/data/raw"
 current_time = datetime.now()
 current_ts = current_time.timestamp()
 min_expected_ts = datetime(1995, 1, 1, 0, 0, 0).timestamp()           # we don't expect data prior to 1995
 
+# Use SQL Alchemy engine
+engine, inspector = get_engine()
 
-def test_database_exists():
-    """ Checks that the database exists"""
+def check_table_details(table_name, expected_schema):
+
+    engine, inspector = get_engine()
+    columns = inspector.get_columns(table_name)
+
+    for column in columns:
+            column_name = column['name']
+            assert column_name in expected_schema, f"Unexpected column {column_name}"
+            
+            expected_type = expected_schema[column_name]['type']
+            actual_type = str(column['type'])
+            assert expected_type in actual_type, f"Expected type {expected_type} for column {column_name}, but got {actual_type}"
+            
+            """expected_nullable = expected_schema[column_name]['nullable']
+            actual_nullable = column['nullable']
+            assert expected_nullable == actual_nullable, f"Expected nullable={expected_nullable} for column {column_name}, but got nullable={actual_nullable}"
+
+            expected_primary_key = expected_schema[column_name]['primary_key']
+            actual_primary_key = column['primary_key']
+            assert expected_primary_key == actual_primary_key, f"Expected primary_key={expected_primary_key} for column {column_name}, but got primary_key={actual_primary_key}"
+            """
+
+
+
+def test_postgre_database_exists():
+    """ Checks that the Postgre database exists"""
+
+    # Use SQL Alchemy engine
+    engine, inspector = get_engine()
+    
+    expected_schema = {
+        'genome_scores': ['movie_id', 'gtag_id', 'relevance', 'updated_at'],
+        'genome_tags': ['gtag_id', 'tag', 'updated_at'],
+        'links': ['movie_id', 'imdb_id', 'tmdb_id', 'updated_at'],
+        'movies': ['movie_id', 'title', 'genres', 'updated_at'],
+        'ratings': ['user_id', 'movie_id', 'rating', 'created_at', 'updated_at'],
+        'tags': ['user_id', 'movie_id', 'tag', 'created_at', 'updated_at'],
+        'users': ['user_id', 'user_key', 'updated_at']
+    }
+
+    actual_tables = inspector.get_table_names()
+    expected_tables = list(expected_schema.keys())
+
+    # Check if all expected tables are present
+    assert(set(expected_tables).issubset(set(actual_tables))), f"Missing tables: {set(expected_tables) - set(actual_tables)}"
+    
+    # Check if there are any unexpected tables
+    assert(set(actual_tables).issubset(set(expected_tables))), f"Unexpected tables: {set(actual_tables) - set(expected_tables)}"
+
+
+def test_postgre_table_movie():
+    """ Checks that movies table is correctly formatted and contained all expected fields """
+
+    expected_schema = {
+        'movie_id': {'type': 'BIGINT'},
+        'title': {'type': 'TEXT'},
+        'genres': {'type': 'TEXT'},
+        'updated_at': {'type': 'TIMESTAMP'}
+    }
+
+    check_table_details("movies", expected_schema)
+
+
+def test_postgre_table_ratings():
+    """ Checks that movies table is correctly formatted and contained all expected fields """
+
+    expected_schema = {
+        'user_id': {'type': 'BIGINT'},
+        'movie_id': {'type': 'BIGINT'},
+        'rating': {'type': 'DOUBLE PRECISION'},
+        'updated_at': {'type': 'TIMESTAMP'}
+    }
+
+    check_table_details("ratings", expected_schema)
+
+
+"""
+def test_csv_database_exists():
+    # Checks that the CSV database exists
 
     # Check whether the specified path exists or not
     files = ["movies.csv", "ratings.csv", "tags.csv", "genome-scores.csv", "genome-tags.csv"]
@@ -17,9 +98,8 @@ def test_database_exists():
     for file in files:
         assert os.path.exists(os.path.join(path, file))
 
-
-def test_movies():
-    """ Checks that movies table is correctly formatted and contained all expected fields"""
+def test_csv_movies():
+    # Checks that movies table is correctly formatted and contained all expected fields
 
     df = pd.read_csv(os.path.join(path, 'movies.csv'))
 
@@ -29,11 +109,10 @@ def test_movies():
     # Check that the fields are correctly formatted
     assert(df['movieId'].dtypes == 'int64')
     assert(df['title'].dtypes == 'object')
-    assert(df['genres'].dtypes == 'object')    
+    assert(df['genres'].dtypes == 'object')  
 
-
-def test_ratings():
-    """ Checks that ratings table is correctly formatted and contained all expected fields"""
+def test_csv_ratings():
+    # Checks that ratings table is correctly formatted and contained all expected fields
 
     df = pd.read_csv(os.path.join(path, 'ratings.csv'))
 
@@ -54,10 +133,9 @@ def test_ratings():
     assert(df['timestamp'].max() <= current_ts)
 
 
-datetime(1995, 1, 1, 0, 0, 0).timestamp()
 
-def test_tags():
-    """ Checks that tags table is correctly formatted and contained all expected fields"""
+def test_csv_tags():
+    # Checks that tags table is correctly formatted and contained all expected fields
 
     df = pd.read_csv(os.path.join(path, 'tags.csv'))
 
@@ -75,8 +153,8 @@ def test_tags():
     assert(df['timestamp'].max() <= current_ts)
 
 
-def test_genome_scores():
-    """ Checks that tags table is correctly formatted and contained all expected fields"""
+def test_csv_genome_scores():
+    # Checks that tags table is correctly formatted and contained all expected fields
 
     df = pd.read_csv(os.path.join(path, 'genome-scores.csv'))
 
@@ -89,8 +167,8 @@ def test_genome_scores():
     assert(df['relevance'].dtypes == 'float64')
 
 
-def test_genome_tags():
-    """ Checks that tags table is correctly formatted and contained all expected fields"""
+def test_csv_genome_tags():
+    # Checks that tags table is correctly formatted and contained all expected fields
 
     df = pd.read_csv(os.path.join(path, 'genome-tags.csv'))
 
@@ -100,3 +178,4 @@ def test_genome_tags():
     # Check that the fields are correctly formatted
     assert(df['tagId'].dtypes == 'int64')
     assert(df['tag'].dtypes == 'object')
+"""

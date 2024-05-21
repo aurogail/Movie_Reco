@@ -2,8 +2,8 @@ from fastapi import FastAPI, Depends, HTTPException
 from pydantic import BaseModel
 import sys
 sys.path.append('src')
-from api_directory.generate_token import *
-from api_directory.preferences import *
+from src.api_directory.generate_token import *
+from src.api_directory.preferences import *
 from models.predict_model import *
 from models.content_predict import *
 

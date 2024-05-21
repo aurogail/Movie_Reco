@@ -14,6 +14,7 @@ requests
 click
 python-dotenv
 pandas
+scikit-surprise
 pytest
 psycopg2-binary
 fastapi
