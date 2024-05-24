@@ -4,13 +4,35 @@ from airflow.operators.python import PythonOperator
 from datetime import datetime, timedelta
 import subprocess
 import sys
-import os
 
 # Add the tests directory to the Python path
 sys.path.append('/opt/airflow/tests')
 
 def run_tests():
-    subprocess.run(["pytest", "/opt/airflow/tests"], check=True, shell=True)
+    try:
+        result = subprocess.run(["pytest", "tests/test_data"], check=True, capture_output=True, text=True)
+        print("Test Output:\n", result.stdout)
+        print("Pytest Error Output:\n", result.stderr)
+    except subprocess.CalledProcessError as e:
+        print("Error Output:\n", e.stderr)
+        print("Pytest Output (if any):\n", e.stdout)
+        raise
+
+def run_tests_bu():
+    try:
+        result = subprocess.run(["pytest", "--version"], check=True, capture_output=True, text=True)
+        print("Test Output:\n", result.stdout)
+    except subprocess.CalledProcessError as e:
+        print("Error Output:\n", e.stderr)
+        raise
+
+def run_simple_tests():
+    try:
+        result = subprocess.run(["pytest", "--version"], check=True, capture_output=True, text=True)
+        print("Test Output:\n", result.stdout)
+    except subprocess.CalledProcessError as e:
+        print("Error Output:\n", e.stderr)
+        raise
 
 default_args = {
     'owner': 'admin',

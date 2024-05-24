@@ -78,7 +78,7 @@ target/
 
 # exclude data from source control by default
 /data/raw
-src/data/db/postgresql
+src/data/db/*.sql
 src/data/raw
 
 # Mac OS-specific storage files

@@ -6,55 +6,41 @@ services:
     image: rclone/rclone
     volumes:
       - ./src/config:/config/rclone         # Local path to Rclone config directory
-      - ./src/data/db/postgresql:/data      # Local path to the data you want to transfer
+      - pg_project_data:/data
+
     command: config
-    #command: ["copyto", "recofilm4:recofilm_db/recofilm_db_backup.sql", "recofilm_gdrive.sql", "-vv"]
+    #command: ["copyto", "recofilm4:recofilm_db/recofilm_gdrive.sql", "db/recofilm_gdrive.sql", "-vv"]
     tty: true                           # Allocate a pseudo-TTY
     stdin_open: true                    # Keep stdin open
     healthcheck:
-      test: ["CMD", "test", "-f", "/data/recofilm_gdrive.sql"]
-      interval: 10s
+      test: ["CMD", "test", "-f", "db/recofilm_gdrive.sql"]
+      interval: 30s
       timeout: 5s
       retries: 5
 
   postgres-db:
-    image: postgres:13
+    image: postgres:16
     container_name: postgres-db
-    depends_on:
-        rclone:
-          condition: service_healthy
-    #command: ["pg_restore", "-U", "admin", "-d", "recofilm_db", "-F", "c", "var/lib/postgresql/data/recofilm_gdrive.sql"]
+    # depends_on:
+    #     rclone:
+    #       condition: service_healthy
+    # command: ["pg_restore", "-U", "admin", "-d", "recofilm_db", "-F", "c", "var/lib/postgresql/data/recofilm_gdrive.sql"]
     env_file:
       - .env
     volumes:
       - pg_project_data:/var/lib/postgresql/data
-    # healthcheck:
-    #   test: ["CMD", "pg_isready", "-U", "airflow"]
-    #   interval: 5s
-    #   retries: 5
+    healthcheck:
+        test: ["CMD", "pg_isready", "-U", "admin"]
+        interval: 5s
+        retries: 5
     networks:
       - mynetwork
     ports:
       - "5433:5432"
 
-  # app:
-  #   image: chvalois/recofilm:0.1
-  #   volumes: 
-  #     - .:/app
-  #   env_file:
-  #     - .env
-  #   healthcheck:
-  #     test: ["CMD", "ls"]
-  #     interval: 10s
-  #     timeout: 10s
-  #     retries: 5
-  #   depends_on:
-  #     - postgres-db
-  #   networks:
-  #     - mynetwork
 
   postgres-airflow:
-    image: postgres:13
+    image: postgres:16
     container_name: postgres-airflow
     environment:
       POSTGRES_USER: airflow

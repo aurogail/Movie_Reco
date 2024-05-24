@@ -1,9 +1,17 @@
-DROP TABLE ratings;
-DROP TABLE movies;
-DROP TABLE links;
-DROP TABLE tags;
-DROP TABLE genome_tags;
-DROP TABLE genome_scores;
-DROP TABLE users;
-/*DROP TABLE recommendations;
-DROP TABLE predicted_ratings;*/
+DROP TABLE IF EXISTS recommendations;
+
+DROP TABLE IF EXISTS predicted_ratings;
+
+DROP TABLE IF EXISTS links;
+
+DROP TABLE IF EXISTS tags;
+
+DROP TABLE IF EXISTS genome_scores;
+
+DROP TABLE IF EXISTS genome_tags;
+
+DROP TABLE IF EXISTS ratings;
+
+DROP TABLE IF EXISTS movies;
+
+DROP TABLE IF EXISTS users;

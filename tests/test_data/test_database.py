@@ -1,4 +1,4 @@
-import os
+import logging
 import pandas as pd
 from datetime import datetime
 from sqlalchemy import inspect
@@ -8,6 +8,8 @@ path = "src/data/raw"
 current_time = datetime.now()
 current_ts = current_time.timestamp()
 min_expected_ts = datetime(1995, 1, 1, 0, 0, 0).timestamp()           # we don't expect data prior to 1995
+
+logger = logging.getLogger("airflow.task")
 
 # Use SQL Alchemy engine
 engine, inspector = get_engine()
@@ -49,7 +51,9 @@ def test_postgre_database_exists():
         'movies': ['movie_id', 'title', 'genres', 'updated_at'],
         'ratings': ['user_id', 'movie_id', 'rating', 'created_at', 'updated_at'],
         'tags': ['user_id', 'movie_id', 'tag', 'created_at', 'updated_at'],
-        'users': ['user_id', 'user_key', 'updated_at']
+        'users': ['user_id', 'user_key', 'updated_at'],
+        #'predicted_ratings': ['pred_id', 'predicted_rating', 'model', 'feedback'],
+        'recommendations': ['reco_id', 'movie_id', 'user_id', 'reco_type', 'reco_datetime', 'user_feedback']
     }
 
     actual_tables = inspector.get_table_names()
@@ -66,8 +70,8 @@ def test_postgre_table_movie():
     """ Checks that movies table is correctly formatted and contained all expected fields """
 
     expected_schema = {
-        'movie_id': {'type': 'BIGINT'},
-        'title': {'type': 'TEXT'},
+        'movie_id': {'type': 'INTEGER'},
+        'title': {'type': 'VARCHAR(255)'},
         'genres': {'type': 'TEXT'},
         'updated_at': {'type': 'TIMESTAMP'}
     }
@@ -79,9 +83,10 @@ def test_postgre_table_ratings():
     """ Checks that movies table is correctly formatted and contained all expected fields """
 
     expected_schema = {
-        'user_id': {'type': 'BIGINT'},
-        'movie_id': {'type': 'BIGINT'},
-        'rating': {'type': 'DOUBLE PRECISION'},
+        'user_id': {'type': 'INTEGER'},
+        'movie_id': {'type': 'INTEGER'},
+        'rating': {'type': 'NUMERIC(2, 1)'},
+        'created_at': {'type': 'TIMESTAMP'},
         'updated_at': {'type': 'TIMESTAMP'}
     }
 
