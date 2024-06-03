@@ -21,14 +21,10 @@ else:
 # Calculate TF-IDF matrix calculate_matrix_tfidf is in src/features/build_tfidf_matrix.py
 matrice_tfidf = calculer_matrice_tfidf(df_content_tags)
 
-# Calculate similarity matrices
-sim_cosinus = cosine_similarity(matrice_tfidf, matrice_tfidf)
-sim_euclidienne = 1 / (1 + euclidean_distances(matrice_tfidf))
-
 # Create an index series
 indices = pd.Series(range(0, len(df_content_tags)), index=df_content_tags.title)
 
-def content_based_reco(titre, mat_sim, num_recommendations=3):
+def content_based_reco(titre, num_recommendations=10):
     """
     Description:
     This function generates content-based movie recommendations based on the provided movie title and similarity matrix.
@@ -45,8 +41,11 @@ def content_based_reco(titre, mat_sim, num_recommendations=3):
     # Get the index of the provided movie title
     idx = indices[titre]
 
+    # Calculate similarity matrices
+    sim_cos = cosine_similarity(matrice_tfidf, matrice_tfidf)   
+
     # Calculate similarity scores between the provided movie and all other movies and sort in descsending order
-    scores_similarite = list(enumerate(mat_sim[idx]))
+    scores_similarite = list(enumerate(sim_cos[idx]))
     scores_similarite = sorted(scores_similarite, key=lambda x: x[1], reverse=True)
 
     # Select the top similar movies excluding the provided movie itself

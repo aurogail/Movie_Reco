@@ -34,7 +34,6 @@ class UserLogin(BaseModel):
 class ContentRecoRequest(BaseModel):
     ''' Movie title available in dataset '''
     titre: str
-    mat_sim: str  
 
 @app.post("/login", name='Generate Token', tags=['Authentication'])
 async def login(user_data: UserLogin):
@@ -152,22 +151,11 @@ async def content_reco(request: ContentRecoRequest, user_id: int = Depends(jwt_b
     - HTTPException(400, detail="Matrice de similarité non valide. Utilisez 'cosinus' ou 'euclidienne'."): If the similarity matrix requested is not valid.
     - HTTPException(403, details=["Invalid authentication scheme.", "Invalid token or expired token.", "Invalid authorization code."]): If the token is not valid and the user cannot be authenticated.
     """
-    
-     # Check if similarity matrix type is valid
-    if request.mat_sim not in ["cosinus", "euclidienne"]:
-        raise HTTPException(status_code=400, detail="Matrice de similarité non valide. Utilisez 'cosinus' ou 'euclidienne'.")
-
     # Check if the movie title is recognized
     if request.titre not in indices.index:
         raise HTTPException(status_code=404, detail="Unknown movie title.")
-    
-    # Retrieve the corresponding similarity matrix    
-    if request.mat_sim == "cosinus":
-        mat_sim = sim_cosinus
-    elif request.mat_sim == "euclidienne":
-        mat_sim = sim_euclidienne
 
     # Get recommendations for the specified movie title
-    recommendations = content_based_reco(request.titre, mat_sim)
+    recommendations = content_based_reco(request.titre)
 
     return {"user_id": user_id, "recommendations": recommendations}
