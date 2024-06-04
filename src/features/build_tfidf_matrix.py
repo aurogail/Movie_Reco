@@ -1,7 +1,7 @@
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-def calculer_matrice_tfidf(df='../../data/interim/movies_tags.csv'):
+def calculer_matrice_tfidf(df='../data/interim/movies_tags.csv'):
     """
     This function takes a DataFrame containing movie tags and returns the corresponding TF-IDF matrix.
     

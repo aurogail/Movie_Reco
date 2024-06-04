@@ -3,9 +3,11 @@ from pydantic import BaseModel
 import sys
 sys.path.append('src')
 from src.api_directory.generate_token import *
-from src.api_directory.preferences import *
-from models.predict_model import *
+from api_directory.preferences import *
 from models.content_predict import *
+from models.collab_predict import *
+from models.hybrid_predict import *
+from src.models.train_model_svd import load_svd_model
 
 
 app = FastAPI(
@@ -31,9 +33,11 @@ class UserLogin(BaseModel):
     ''' User Id available in dataset '''
     user_id: int
 
-class ContentRecoRequest(BaseModel):
+class HybridRecoRequest(BaseModel):
     ''' Movie title available in dataset '''
     titre: str
+
+svd_model = load_svd_model()
 
 @app.post("/login", name='Generate Token', tags=['Authentication'])
 async def login(user_data: UserLogin):
@@ -97,20 +101,12 @@ async def get_recommendations(user_id: int = Depends(jwt_bearer)):
     - HTTPException(403, details = ["Invalid authentication scheme.", "Invalid token or expired token.", "Invalid authorization code."]): If the token is not valid and the user cannot be authenticated.
     """
 
-    # Obtaining movie recommendations (movie IDs) with the model
-    recommendations_ids = make_predictions(
-        [user_id], "src/models/model.pkl", "src/data/processed/user_matrix.csv")
-    
-    # Loading movie data
-    movies_data = pd.read_csv("src/data/raw/movies.csv")
-    
-    # Creating a dictionary mapping movieId to title
-    movies_dict = dict(zip(movies_data['movieId'], movies_data['title']))
-    
-   # Mapping movie IDs from recommandation to titles
-    recommendations_with_titles = [movies_dict[movie_id] for movie_id in recommendations_ids[0]]
+    try:
+        recommendations = collab_reco(user_id, svd_model)  # Utilise le modèle chargé globalement
+        return {"user_id": user_id, "recommendations": recommendations.to_dict(orient='records')}  # Conversion en dictionnaire pour JSON
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e)) 
 
-    return {"user_id": user_id, "recommendations": recommendations_with_titles}
 
 
 @app.get("/preferences", name='Top Movie Genres', tags=['Recommandations'])
@@ -134,8 +130,8 @@ async def get_preferences(user_id: int = Depends(jwt_bearer)):
     return {"user_id": user_id, "preferences": preferences}
 
 
-@app.post("/content_reco", name='Content Based Filtering Recommandations', tags=['Recommandations'])
-async def content_reco(request: ContentRecoRequest, user_id: int = Depends(jwt_bearer)):
+@app.post("/hybrid", name='Hybrid Filtering Recommandations', tags=['Recommandations'])
+async def content_reco(request: HybridRecoRequest, user_id: int = Depends(jwt_bearer)):
     """
     Description:
     This endpoint retrieves personalized movie recommendations for the authenticated user based on content-based filtering.
@@ -151,11 +147,12 @@ async def content_reco(request: ContentRecoRequest, user_id: int = Depends(jwt_b
     - HTTPException(400, detail="Matrice de similarité non valide. Utilisez 'cosinus' ou 'euclidienne'."): If the similarity matrix requested is not valid.
     - HTTPException(403, details=["Invalid authentication scheme.", "Invalid token or expired token.", "Invalid authorization code."]): If the token is not valid and the user cannot be authenticated.
     """
+
     # Check if the movie title is recognized
     if request.titre not in indices.index:
         raise HTTPException(status_code=404, detail="Unknown movie title.")
-
-    # Get recommendations for the specified movie title
-    recommendations = content_based_reco(request.titre)
-
-    return {"user_id": user_id, "recommendations": recommendations}
+    try:
+        recommendations = hybride_reco(user_id, svd_model, request.titre) 
+        return {"user_id": user_id, "recommendations": recommendations.to_dict(orient='records')}  # Conversion en dictionnaire pour JSON
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e)) 
