@@ -1,8 +1,9 @@
 import pandas as pd
 import pickle
-from train_model_svd import *
-from load_svd_data import load_and_prepare_data
-
+import sys
+sys.path.append('src')
+from src.models.train_model_svd import *
+from src.models.load_svd_data import *
 
 def collab_reco(user_id, svd_model, num_recommendations=10):
 
@@ -20,7 +21,7 @@ def collab_reco(user_id, svd_model, num_recommendations=10):
     predictions_svd = svd_model.test(anti_testset)
     predictions_svd = pd.DataFrame(predictions_svd)
 
-    df_movies = pd.read_csv("../data/raw/movies.csv")
+    df_movies = pd.read_csv("src/data/raw/movies.csv")
     movieId_title_map = df_movies.set_index('movieId')['title'].to_dict()
     predictions_svd['title'] = predictions_svd['iid'].map(movieId_title_map)
 
@@ -32,8 +33,7 @@ def collab_reco(user_id, svd_model, num_recommendations=10):
 
 if __name__ == "__main__":
 
-    with open("../models/svd_model.pkl", "rb") as filehandler:
-        svd_model = pickle.load(filehandler)
+    svd_model = load_svd_model()
     
     user_id = 1000
     recommendations = collab_reco(user_id, svd_model)

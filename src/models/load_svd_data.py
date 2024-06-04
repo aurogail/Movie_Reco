@@ -1,7 +1,9 @@
 import pandas as pd
+import sys
+sys.path.append('src')
 from surprise import Reader, Dataset
 
-def load_and_prepare_data(ratings_path="../data/raw/ratings.csv", rating_scale=(0, 5)):
+def load_and_prepare_data(ratings_path="src/data/raw/ratings.csv", rating_scale=(0, 5)):
     df_ratings = pd.read_csv(ratings_path)
     df_ratings = df_ratings.drop("timestamp", axis=1)
     reader = Reader(rating_scale=rating_scale)

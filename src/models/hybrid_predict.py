@@ -1,8 +1,11 @@
 from sklearn.preprocessing import MinMaxScaler
-from content_predict import *
-from collab_predict import *
+import sys
+sys.path.append('src')
+from src.models.content_predict import *
+from src.models.collab_predict import *
+from src.models.train_model_svd import load_svd_model
 
-def hybride_reco(user_id, titre, num_recommendations=10, alpha=0.7, n=100):
+def hybride_reco(user_id, svd_model, titre, num_recommendations=10, alpha=0.7, n=100):
 
     scaler = MinMaxScaler()
     # Obtenir les recommandations basées sur le contenu
@@ -33,9 +36,8 @@ rec_combined['score_collab'])
 
 
 if __name__ == "__main__":
-    with open("../models/svd_model.pkl", "rb") as filehandler:
-        svd_model = pickle.load(filehandler)
+    svd_model = load_svd_model()
     user_id = 1000
     titre = "Braveheart (1995)"
-    recommandations_hybrides = hybride_reco(user_id, titre, num_recommendations=10, alpha=0.7)
+    recommandations_hybrides = hybride_reco(user_id, svd_model, titre, num_recommendations=10, alpha=0.7)
     print(recommandations_hybrides)
