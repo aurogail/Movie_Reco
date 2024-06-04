@@ -14,7 +14,7 @@ def hybride_reco(user_id, titre, num_recommendations=10, alpha=0.7, n=100):
 rec_content.head(10)))
 
     # Obtenir les recommandations basées sur le filtrage collaboratif
-    rec_collab = collab_reco(user_id, num_recommendations*n)
+    rec_collab = collab_reco(user_id, svd_model, num_recommendations*n)
     rec_collab = rec_collab.set_index('title')
     rec_collab = rec_collab.rename(columns={'note': 'score_collab'})
     rec_collab['score_collab'] = scaler.fit_transform(rec_collab[['score_collab']])
@@ -33,6 +33,8 @@ rec_combined['score_collab'])
 
 
 if __name__ == "__main__":
+    with open("../models/svd_model.pkl", "rb") as filehandler:
+        svd_model = pickle.load(filehandler)
     user_id = 1000
     titre = "Braveheart (1995)"
     recommandations_hybrides = hybride_reco(user_id, titre, num_recommendations=10, alpha=0.7)
