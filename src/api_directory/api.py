@@ -37,6 +37,7 @@ class HybridRecoRequest(BaseModel):
     ''' Movie title available in dataset '''
     titre: str
 
+# Open model
 svd_model = load_svd_model()
 
 @app.post("/login", name='Generate Token', tags=['Authentication'])
@@ -95,18 +96,25 @@ async def get_recommendations(user_id: int = Depends(jwt_bearer)):
     - user_id (int, dependency) : the user_id extracted from the payload of the JWT token sent.
 
     Returns:
-    - JSON: returns a JSON object containing personalized movie recommendations for the user.
+    - JSON: returns a JSON object containing a list of personalized movies recommendations for the user.
     
     Raises:
     - HTTPException(403, details = ["Invalid authentication scheme.", "Invalid token or expired token.", "Invalid authorization code."]): If the token is not valid and the user cannot be authenticated.
     """
 
     try:
-        recommendations = collab_reco(user_id, svd_model)  # Utilise le modèle chargé globalement
-        return {"user_id": user_id, "recommendations": recommendations.to_dict(orient='records')}  # Conversion en dictionnaire pour JSON
+        recommendations = collab_reco(user_id, svd_model) 
+        recommendations_list = recommendations.to_dict(orient='records')
+        # Extraire les titres des recommandations
+        titles = [rec['title'] for rec in recommendations_list]
+    
+        # Construire la phrase de réponse
+        response = {f"Les recommandations pour le user {user_id} sont : {', '.join(titles)}"}
+
+        return response
+        
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) 
-
 
 
 @app.get("/preferences", name='Top Movie Genres', tags=['Recommandations'])
@@ -141,10 +149,9 @@ async def content_reco(request: HybridRecoRequest, user_id: int = Depends(jwt_be
     - user_id (int, dependency): The user_id extracted from the payload of the JWT token sent.
 
     Returns:
-    - JSON: Returns a JSON object containing personalized movie recommendations for the user. The movies returned should be similar to the one sent in the request body.
+    - JSON: Returns a JSON object containing a list of personalized movie recommendations for the user. The movies returned should be similar to the one sent in the request body.
 
     Raises:
-    - HTTPException(400, detail="Matrice de similarité non valide. Utilisez 'cosinus' ou 'euclidienne'."): If the similarity matrix requested is not valid.
     - HTTPException(403, details=["Invalid authentication scheme.", "Invalid token or expired token.", "Invalid authorization code."]): If the token is not valid and the user cannot be authenticated.
     """
 
@@ -153,6 +160,14 @@ async def content_reco(request: HybridRecoRequest, user_id: int = Depends(jwt_be
         raise HTTPException(status_code=404, detail="Unknown movie title.")
     try:
         recommendations = hybride_reco(user_id, svd_model, request.titre) 
-        return {"user_id": user_id, "recommendations": recommendations.to_dict(orient='records')}  # Conversion en dictionnaire pour JSON
+        recommendations_list = recommendations.to_dict(orient='records')
+        # Extraire les titres des recommandations
+        titles = [rec['title'] for rec in recommendations_list]
+    
+        # Construire la phrase de réponse
+        response = {f"Les recommandations pour le user {user_id} et le film {request.titre} sont : {', '.join(titles)}"}
+
+        return response
+    
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) 

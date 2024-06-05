@@ -27,8 +27,7 @@ def content_based_reco(titre, num_recommendations=10):
 
     Args:
     - titre (str): The title of the movie for which recommendations are generated.
-    - mat_sim (array-like): The similarity matrix used for recommendation.
-    - num_recommendations (int): The number of recommendations to generate. Defaults to 3.
+    - num_recommendations (int): The number of recommendations to generate. Defaults to 10.
 
     Returns:
     - dict: A dictionary containing movie titles as keys and their similarity scores as values.
@@ -50,13 +49,13 @@ def content_based_reco(titre, num_recommendations=10):
     top_similar = scores_similarite[1:num_recommendations+1]
 
     # Create a dictionary containing recommended movie titles and their similarity scores
-    recommandations = [(indices.index[idx], score) for idx, score in top_similar]
-    recommandations = pd.DataFrame(recommandations)
-    recommandations = recommandations.rename(columns={0: 'title', 1: 'score'})
+    recommendations = [(indices.index[idx], score) for idx, score in top_similar]
+    recommendations = pd.DataFrame(recommendations)
+    recommendations = recommendations.rename(columns={0: 'title', 1: 'score'})
 
-    return recommandations
+    return recommendations
 
 if __name__ == "__main__":
-    recommandations = content_based_reco('Toy Story (1995)')
-    print(recommandations)
+    recommendations = content_based_reco('Toy Story (1995)')
+    print(recommendations)
 
