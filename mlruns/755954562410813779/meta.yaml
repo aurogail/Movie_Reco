@@ -1,0 +1,6 @@
+artifact_location: file:///Users/aurore/Desktop/PROJET_RECO_MOVIE/fev24_cmlops_movie_reco/mlruns/755954562410813779
+creation_time: 1717533431134
+experiment_id: '755954562410813779'
+last_update_time: 1717533431134
+lifecycle_stage: active
+name: SVD_Movie_Reco
