@@ -62,7 +62,7 @@ def load_svd_model():
         return pickle.load(filehandler)
 
 if __name__ == "__main__":
-    svd, cv_results = evaluate_svd_model(df_surprise)
+    svd, cv_results = evaluate_svd_model()
     svd_model = train_svd_model()
 
     filehandler = open("src/models/svd_model.pkl", "wb")
