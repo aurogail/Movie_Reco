@@ -16,7 +16,7 @@ def train_model_svd():
     # Use SQL Alchemy engine
     engine, inspector = get_engine()
 
-    query = "SELECT * FROM ratings LIMIT 1000000;"
+    query = "SELECT * FROM ratings LIMIT 10000;"
     df = pd.read_sql(query, engine)
     df = df.drop(columns = {'created_at'})
     print(df.head())
@@ -55,7 +55,7 @@ def train_model_svd():
     train_time = time.time()
     # Calculate elapsed time
     elapsed_time = train_time - gridsearch_time
-    print("Grid Search took: ", round(elapsed_time, 4), "seconds")
+    print("Training model took: ", round(elapsed_time, 4), "seconds")
 
 
     # End timer
