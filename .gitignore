@@ -80,6 +80,7 @@ target/
 /data/raw
 src/data/db/*.sql
 src/data/raw
+src/data/processed
 
 # Mac OS-specific storage files
 .DS_Store
