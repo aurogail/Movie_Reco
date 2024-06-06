@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import re
+from src.data.db.database_functions import get_engine, sql
 
 def load_data():
     """
@@ -16,6 +17,33 @@ def load_data():
     df_genome_tags = pd.read_csv('../../data/raw/genome-tags.csv')
     df_genome_scores = pd.read_csv('../../data/raw/genome-scores.csv')
     return df_tags, df_movies, df_genome_tags, df_genome_scores
+
+def load_data_from_db():
+    """
+    Charge les données à partir de la base postgres.
+
+    Returns
+    -------
+    tuple
+        Un tuple contenant les DataFrames des tags, des films, des tags de genome et des scores de genome.
+    """
+     # Use SQL Alchemy engine
+    engine, inspector = get_engine()
+
+    query = "SELECT * FROM tags;"
+    df_tags = pd.read_sql(query, engine)
+
+    query = "SELECT * FROM movies;"
+    df_movies = pd.read_sql(query, engine)
+
+    query = "SELECT * FROM genome_tags;"
+    df_genome_tags = pd.read_sql(query, engine)    
+    
+    query = "SELECT * FROM genome_scores;"
+    df_genome_scores = pd.read_sql(query, engine)
+
+    return df_tags, df_movies, df_genome_tags, df_genome_scores
+
 
 def select_top_relevant_tags(df_genome_tags, df_genome_scores):
     """
@@ -33,9 +61,12 @@ def select_top_relevant_tags(df_genome_tags, df_genome_scores):
     pd.DataFrame
         DataFrame contenant les tags les plus pertinents pour chaque film.
     """
-    df_tags_relevance = pd.merge(df_genome_tags, df_genome_scores, on='tagId', how='outer')
-    df_top_relevance = df_tags_relevance.groupby('movieId').apply(lambda x: x.nlargest(3, 'relevance')).reset_index(drop=True)
-    df_top_relevance_grouped = df_top_relevance.groupby('movieId')['tag'].apply(lambda x: ', '.join(x)).reset_index()
+    # df_tags_relevance = pd.merge(df_genome_tags, df_genome_scores, on='tagId', how='outer')
+    # df_top_relevance = df_tags_relevance.groupby('movieId').apply(lambda x: x.nlargest(3, 'relevance')).reset_index(drop=True)
+    # df_top_relevance_grouped = df_top_relevance.groupby('movieId')['tag'].apply(lambda x: ', '.join(x)).reset_index()
+    df_tags_relevance = pd.merge(df_genome_tags, df_genome_scores, on='gtag_id', how='outer')
+    df_top_relevance = df_tags_relevance.groupby('movie_id').apply(lambda x: x.nlargest(3, 'relevance')).reset_index(drop=True)
+    df_top_relevance_grouped = df_top_relevance.groupby('movie_id')['tag'].apply(lambda x: ', '.join(x)).reset_index()
     df_top_relevance_grouped.rename(columns={'tag': 'tags'}, inplace=True)
     return df_top_relevance_grouped
 
@@ -54,7 +85,8 @@ def merge_tags(df_tags):
         DataFrame regroupant les tags par movieId.
     """
     df_tags['tag'] = df_tags['tag'].astype(str)
-    df_tags_grouped = df_tags.groupby('movieId')['tag'].apply(lambda x: ', '.join(x)).reset_index()
+    # df_tags_grouped = df_tags.groupby('movieId')['tag'].apply(lambda x: ', '.join(x)).reset_index()
+    df_tags_grouped = df_tags.groupby('movie_id')['tag'].apply(lambda x: ', '.join(x)).reset_index()
     df_tags_grouped.rename(columns={'tag': 'tags'}, inplace=True)
     return df_tags_grouped
 
@@ -76,12 +108,16 @@ def merge_data(df_top_relevance_grouped, df_tags_grouped, df_movies):
     pd.DataFrame
         DataFrame fusionné.
     """
-    df_total_tags = pd.merge(df_top_relevance_grouped, df_tags_grouped, on='movieId', how='outer')
+    # df_total_tags = pd.merge(df_top_relevance_grouped, df_tags_grouped, on='movieId', how='outer')
+    df_total_tags = pd.merge(df_top_relevance_grouped, df_tags_grouped, on='movie_id', how='outer')
+
     df_total_tags['tags_x'] = df_total_tags['tags_x'].astype(str)
     df_total_tags['tags_y'] = df_total_tags['tags_y'].astype(str)
     df_total_tags['tags'] = df_total_tags['tags_x'] + ', ' + df_total_tags['tags_y']
     df_total_tags.drop(['tags_x', 'tags_y'], axis=1, inplace=True)
-    df_total_tags = pd.merge(df_movies, df_total_tags, on='movieId', how='outer')
+    # df_total_tags = pd.merge(df_movies, df_total_tags, on='movieId', how='outer')
+    df_total_tags = pd.merge(df_movies, df_total_tags, on='movie_id', how='outer')
+
     df_total_tags['genres'] = df_total_tags['genres'].str.replace('|', ', ')
     df_total_tags['genres'] = df_total_tags['genres'].astype(str)
     df_total_tags['tags'] = df_total_tags['tags'].astype(str)
@@ -134,14 +170,16 @@ if __name__ == "__main__":
     """
     Fonction principale pour exécuter toutes les étapes du traitement des données.
     """
-    df_tags, df_movies, df_genome_tags, df_genome_scores = load_data()
+#    df_tags, df_movies, df_genome_tags, df_genome_scores = load_data()
+    df_tags, df_movies, df_genome_tags, df_genome_scores = load_data_from_db()
+
     df_top_relevance_grouped = select_top_relevant_tags(df_genome_tags, df_genome_scores)
     df_tags_grouped = merge_tags(df_tags)
     df_total_tags = merge_data(df_top_relevance_grouped, df_tags_grouped, df_movies)
     df_total_tags = process_df(df_total_tags)
-    
+
     # Vérification de l'existence du fichier movies_tags.csv
-    file_path = '../data/interim/movies_tags.csv'
+    file_path = 'src/data/interim/movies_tags.csv'
     if os.path.exists(file_path):
         os.remove(file_path)
     

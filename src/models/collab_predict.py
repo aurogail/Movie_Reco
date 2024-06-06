@@ -1,8 +1,9 @@
 import pandas as pd
 import sys
 sys.path.append('src')
-from src.models.train_model_svd import *
-from src.models.load_svd_data import *
+from src.models.train_model_svd import load_svd_model
+from src.models.load_svd_data import load_and_prepare_data_from_db
+from src.data.db.database_functions import get_engine
 
 def collab_reco(user_id, svd_model, num_recommendations=10, start_index=0):
     """
@@ -19,10 +20,16 @@ def collab_reco(user_id, svd_model, num_recommendations=10, start_index=0):
     - DataFrame: A DataFrame containing the recommended movie titles and their estimated ratings.
     """
 
+    print("Step 1")
+
     # List to store items not rated by the user
     anti_testset =[]
     # Load and prepare the data
-    _, train_set = load_and_prepare_data()
+    #_, train_set = load_and_prepare_data()
+    _, train_set = load_and_prepare_data_from_db()
+
+    print("Step 2")
+
     # Convert the user ID to the internal ID used by the training set
     target_user = train_set.to_inner_uid(user_id)
     # Get the global mean rating
@@ -31,18 +38,34 @@ def collab_reco(user_id, svd_model, num_recommendations=10, start_index=0):
     user_note = train_set.ur[target_user]
     user_film = [item for (item, _) in user_note]
 
+    print("Step 3")
+
     # Create the anti-test set with movies the user has not rated
     for film in train_set.all_items():
         if film not in user_film:
             anti_testset.append((user_id, train_set.to_raw_iid(film), moyenne))
+
+    print("Step 4")
 
     # Generate predictions using the SVD model
     predictions_svd = svd_model.test(anti_testset)
     predictions_svd = pd.DataFrame(predictions_svd)
 
     # Load movie data to map movie IDs to titles
-    df_movies = pd.read_csv("src/data/raw/movies.csv")
-    movieId_title_map = df_movies.set_index('movieId')['title'].to_dict()
+    # df_movies = pd.read_csv("src/data/raw/movies.csv")
+    # movieId_title_map = df_movies.set_index('movieId')['title'].to_dict()
+
+    print("Step 5")
+
+    # Use SQL Alchemy engine
+    engine, inspector = get_engine()
+
+    query = "SELECT * FROM movies;"
+    df_movies = pd.read_sql(query, engine)
+    movieId_title_map = df_movies.set_index('movie_id')['title'].to_dict()
+
+    print("Step 6")
+
     predictions_svd['title'] = predictions_svd['iid'].map(movieId_title_map)
 
     # Rename and reorder the columns for clarity

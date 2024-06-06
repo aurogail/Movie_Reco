@@ -26,6 +26,7 @@ def hybride_reco(user_id, svd_model, titre, num_recommendations=10, alpha=0.8, n
     scaler = MinMaxScaler()
 
     # Get content-based recommendations
+    print("Calculating content based recommendations")
     rec_content = content_based_reco(titre, num_recommendations*n)
     rec_content = rec_content.set_index('title')
     rec_content = rec_content.rename(columns={'score': 'score_content'})
@@ -34,6 +35,7 @@ def hybride_reco(user_id, svd_model, titre, num_recommendations=10, alpha=0.8, n
 rec_content.head(10)))
 
     # Get collaborative filtering recommendations
+    print("Calculating collaborative based recommendations")
     rec_collab = collab_reco(user_id, svd_model, num_recommendations*n)
     rec_collab = rec_collab.set_index('title')
     rec_collab = rec_collab.rename(columns={'note': 'score_collab'})
@@ -56,5 +58,6 @@ if __name__ == "__main__":
     svd_model = load_svd_model()
     user_id = 1000
     titre = "Braveheart (1995)"
-    recommandations_hybrides = hybride_reco(user_id, svd_model, titre, num_recommendations=10, alpha=0.7)
+    #recommandations_hybrides = hybride_reco(user_id, svd_model, titre, num_recommendations=10, alpha=0.7)
+    recommandations_hybrides = hybride_reco(user_id, svd_model, titre, num_recommendations=1, alpha=0.7)
     print(recommandations_hybrides)
