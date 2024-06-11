@@ -7,7 +7,7 @@ from src.models.content_predict import *
 from src.models.collab_predict import *
 from src.models.train_model_svd import load_svd_model
 
-def hybride_reco(user_id, svd_model, train_set, titre, num_recommendations=10, alpha=0.8, n=1000):
+def hybride_reco(user_id, svd_model, df_ratings, titre, num_recommendations=10, alpha=0.8, n=1000):
     """
     Description:
     This function generates hybrid movie recommendations by combining content-based and collaborative filtering scores.
@@ -39,7 +39,7 @@ def hybride_reco(user_id, svd_model, train_set, titre, num_recommendations=10, a
     #print("Recommandations basées sur le contenu pour '{}':\n{}".format(titre, rec_content.head(10)))
 
     # Get collaborative filtering recommendations
-    rec_collab = collab_reco(user_id, svd_model, train_set, num_recommendations*n)
+    rec_collab = collab_reco(user_id, svd_model, df_ratings, num_recommendations*n)
     rec_collab = rec_collab.set_index('title')
     rec_collab = rec_collab.rename(columns={'note': 'score_collab'})
     rec_collab['score_collab'] = scaler.fit_transform(rec_collab[['score_collab']])
@@ -75,5 +75,5 @@ if __name__ == "__main__":
     df_surprise, train_set = load_and_prepare_data()
     user_id = 1000
     titre = "Braveheart (1995)"
-    recommandations_hybrides = hybride_reco(user_id, svd_model, train_set, titre, num_recommendations=10, alpha=0.7)
+    recommandations_hybrides = hybride_reco(user_id, svd_model, df_ratings, titre, num_recommendations=10, alpha=0.7)
     print(recommandations_hybrides)

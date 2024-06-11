@@ -9,7 +9,7 @@ from src.models.load_svd_data import *
 memory = Memory(cachedir, verbose=True)
 # Define experiment name
 
-def collab_reco(user_id, svd_model, train_set, num_recommendations=10):
+def collab_reco(user_id, svd_model, df_ratings, num_recommendations=10):
     """
     Description:
     This function generates collaborative movie recommendations for a given user using the provided SVD model.
@@ -34,27 +34,23 @@ def collab_reco(user_id, svd_model, train_set, num_recommendations=10):
     mlflow.set_experiment(experiment_name)
 
     with mlflow.start_run(run_name="collab_reco"):
-        # List to store items not rated by the user
-        anti_testset =[]
-        # Convert the user ID to the internal ID used by the training set
-        target_user = train_set.to_inner_uid(user_id)
-        # Get the global mean rating
-        moyenne = train_set.global_mean
-        # Get the movies rated by the user
-        user_note = train_set.ur[target_user]
-        user_film = [item for (item, _) in user_note]
 
-        # Create the anti-test set with movies the user has not rated
-        for film in train_set.all_items():
-            if film not in user_film:
-                anti_testset.append((user_id, train_set.to_raw_iid(film), moyenne))
-
+        # Calculer la moyenne globale des notes
+        df_ratings = df_ratings[["userId","movieId","rating"]]
+        moyenne = df_ratings['rating'].mean()
+        df_movies = pd.read_csv("src/data/raw/movies.csv")
+        # Obtenir les films notés par l'utilisateur
+        user_rated_movies = set(df_ratings[df_ratings['userId'] == user_id]['movieId'])
+        
+        # Créer la liste anti_testset pour les films que l'utilisateur n'a pas notés
+        all_movies = set(df_movies['movieId'])
+        anti_testset = [(user_id, movie_id, moyenne) for movie_id in all_movies if movie_id not in user_rated_movies]
+        
         # Generate predictions using the SVD model
         predictions_svd = svd_model.test(anti_testset)
         predictions_svd = pd.DataFrame(predictions_svd)
 
         # Load movie data to map movie IDs to titles
-        df_movies = pd.read_csv("src/data/raw/movies.csv")
         movieId_title_map = df_movies.set_index('movieId')['title'].to_dict()
         predictions_svd['title'] = predictions_svd['iid'].map(movieId_title_map)
 
@@ -94,10 +90,10 @@ def generate_new_recommendations(top_recommendations_collab):
 
 if __name__ == "__main__":
     svd_model = load_svd_model()
+    df_ratings = pd.read_csv("src/data/raw/ratings.csv")
     print("model loaded")
-    df_surprise, train_set = load_and_prepare_data()
     user_id = 1000
-    recommendations = collab_reco(user_id, svd_model, train_set)
+    recommendations = collab_reco(user_id, svd_model, df_ratings)
     print(recommendations)
     satisfaction = input("Êtes-vous satisfait de ces recommandations ? (Oui/Non): ")
 

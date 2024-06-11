@@ -18,7 +18,10 @@ pytest
 psycopg2-binary
 fastapi
 httpx
+python-jose
 pyjwt
 httptools==0.1.* 
 uvicorn
 SQLAlchemy
+mlflow
+joblib
