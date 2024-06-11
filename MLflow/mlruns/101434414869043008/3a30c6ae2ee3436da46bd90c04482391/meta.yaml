@@ -1,0 +1,15 @@
+artifact_uri: /Users/aurore/Desktop/PROJET_RECO_MOVIE/fev24_cmlops_movie_reco/MLflow/mlruns/101434414869043008/3a30c6ae2ee3436da46bd90c04482391/artifacts
+end_time: 1717845401025
+entry_point_name: ''
+experiment_id: '101434414869043008'
+lifecycle_stage: active
+run_id: 3a30c6ae2ee3436da46bd90c04482391
+run_name: masked-stag-176
+run_uuid: 3a30c6ae2ee3436da46bd90c04482391
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1717796147600
+status: 4
+tags: []
+user_id: aurore

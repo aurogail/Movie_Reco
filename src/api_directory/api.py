@@ -1,4 +1,10 @@
 from fastapi import FastAPI, Depends, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import Response
+from datetime import datetime
+import logging
+import json
 from pydantic import BaseModel
 import sys
 sys.path.append('src')
@@ -7,8 +13,14 @@ from api_directory.preferences import *
 from models.content_predict import *
 from models.collab_predict import *
 from models.hybrid_predict import *
-from src.models.train_model_svd import load_svd_model
 
+# Cration of logger object
+logger = logging.getLogger(__name__)
+logging.basicConfig(filename='api_log.log', level=logging.INFO)
+
+# Load model when API start
+svd_model = load_svd_model()
+df_surprise, train_set = load_and_prepare_data()
 
 app = FastAPI(
     title="Movie Recommandation's API",
@@ -25,6 +37,55 @@ app = FastAPI(
     }
 ])
 
+# Add CORS to API
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Log Middleware
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    start_time = datetime.utcnow()
+
+    user_id = None
+
+    if request.method in ["POST", "PUT"]:
+        try:
+            request_body = await request.json()
+            user_id = request_body.get("user_id")
+        except Exception:
+            pass 
+
+    if request.method == "GET":
+        user_id = request.query_params.get("user_id")
+
+    response = await call_next(request)
+
+    if not user_id and response.media_type == "application/json":
+        try:
+            response_json = await response.json()
+            user_id = response_json.get("user_id")
+        except Exception:
+            pass 
+
+    process_time = datetime.utcnow() - start_time
+
+    logger.info({
+        "timestamp": start_time.isoformat(),
+        "user_id": user_id,
+        "request_path": request.url.path,
+        "request_method": request.method,
+        "response_status_code": response.status_code,
+        "process_time": process_time.total_seconds()
+    })
+
+    return response
+
+
 # Object containing JWTBearer class from api_directory/generate_token.py
 jwt_bearer = JWTBearer()
 
@@ -36,8 +97,6 @@ class UserLogin(BaseModel):
 class HybridRecoRequest(BaseModel):
     ''' Movie title available in dataset '''
     titre: str
-
-svd_model = load_svd_model()
 
 @app.post("/login", name='Generate Token', tags=['Authentication'])
 async def login(user_data: UserLogin):
@@ -102,8 +161,9 @@ async def get_recommendations(user_id: int = Depends(jwt_bearer)):
     """
 
     try:
-        recommendations = collab_reco(user_id, svd_model)  # Utilise le modèle chargé globalement
-        return {"user_id": user_id, "recommendations": recommendations.to_dict(orient='records')}  # Conversion en dictionnaire pour JSON
+        recommendations = collab_reco(user_id, svd_model, train_set)  # Utilise le modèle chargé globalement
+        titles = recommendations['title']
+        return {"user_id": user_id, "recommendations": titles.tolist()}  # Conversion en dictionnaire pour JSON
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) 
 
@@ -131,7 +191,7 @@ async def get_preferences(user_id: int = Depends(jwt_bearer)):
 
 
 @app.post("/hybrid", name='Hybrid Filtering Recommandations', tags=['Recommandations'])
-async def content_reco(request: HybridRecoRequest, user_id: int = Depends(jwt_bearer)):
+async def hybrid_reco(request: HybridRecoRequest, user_id: int = Depends(jwt_bearer)):
     """
     Description:
     This endpoint retrieves personalized movie recommendations for the authenticated user based on content-based filtering.
@@ -152,7 +212,8 @@ async def content_reco(request: HybridRecoRequest, user_id: int = Depends(jwt_be
     if request.titre not in indices.index:
         raise HTTPException(status_code=404, detail="Unknown movie title.")
     try:
-        recommendations = hybride_reco(user_id, svd_model, request.titre) 
-        return {"user_id": user_id, "recommendations": recommendations.to_dict(orient='records')}  # Conversion en dictionnaire pour JSON
+        recommendations = hybride_reco(user_id, svd_model, train_set, request.titre) 
+        titles = recommendations['title']
+        return {"user_id": user_id, "recommendations": titles.tolist()}  # Conversion en dictionnaire pour JSON
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) 

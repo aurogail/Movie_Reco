@@ -1,0 +1,16 @@
+artifact_uri: /Users/aurore/Desktop/PROJET_RECO_MOVIE/fev24_cmlops_movie_reco/MLflow/mlruns/545657689343130723/1923e61a9feb43bdb4e90bd229c7b187/artifacts
+deleted_time: 1717702804973
+end_time: 1717702780348
+entry_point_name: ''
+experiment_id: '545657689343130723'
+lifecycle_stage: deleted
+run_id: 1923e61a9feb43bdb4e90bd229c7b187
+run_name: sincere-gnat-809
+run_uuid: 1923e61a9feb43bdb4e90bd229c7b187
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1717690027397
+status: 4
+tags: []
+user_id: aurore

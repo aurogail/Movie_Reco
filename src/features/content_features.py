@@ -139,9 +139,14 @@ if __name__ == "__main__":
     df_tags_grouped = merge_tags(df_tags)
     df_total_tags = merge_data(df_top_relevance_grouped, df_tags_grouped, df_movies)
     df_total_tags = process_df(df_total_tags)
-    
+
+    # Check if directory exist otherwise it's created
+    interim_dir = "src/data/interim/"
+    if not os.path.exists(interim_dir):
+        os.makedirs(interim_dir)
+
     # Vérification de l'existence du fichier movies_tags.csv
-    file_path = '../data/interim/movies_tags.csv'
+    file_path = os.path.join(interim_dir, 'movies_tags.csv')
     if os.path.exists(file_path):
         os.remove(file_path)
     

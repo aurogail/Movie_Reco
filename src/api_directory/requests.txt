@@ -10,5 +10,5 @@ curl -X GET "http://localhost:8000/recommendations" -H "Authorization: Bearer <t
 # /preferences
 curl -X GET "http://localhost:8000/preferences" -H "Authorization: Bearer <token>"
 
-# /content_reco
-curl -X POST "http://localhost:8000/content_reco" -H "Authorization: Bearer <token>" -H "Content-Type: application/json" -d '{"titre": "The Dark Knight", "mat_sim": "cosinus"}'
+# /hybrid
+curl -X POST "http://localhost:8000/hybrid" -H "Authorization: Bearer <token>" -H "Content-Type: application/json" -d '{"titre": "Braveheart (1995)"}'

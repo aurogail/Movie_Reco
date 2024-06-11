@@ -1,0 +1,6 @@
+artifact_location: /Users/aurore/Desktop/PROJET_RECO_MOVIE/fev24_cmlops_movie_reco/MLflow/mlruns/192934637281319254
+creation_time: 1718023263795
+experiment_id: '192934637281319254'
+last_update_time: 1718023263795
+lifecycle_stage: active
+name: SVD_Collab_Pred

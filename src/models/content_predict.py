@@ -1,4 +1,5 @@
 from sklearn.metrics.pairwise import cosine_similarity
+import mlflow
 import pandas as pd
 import sys
 sys.path.append('src')
@@ -33,26 +34,45 @@ def content_based_reco(titre, num_recommendations=10):
     Returns:
     - dict: A dictionary containing movie titles as keys and their similarity scores as values.
     """
-    # Calculate TF-IDF matrix calculate_matrix_tfidf is in src/features/build_tfidf_matrix.py
-    matrice_tfidf = calculer_matrice_tfidf(df_content_tags)
+    # Check if temporary directory exist otherwise it's created
+    temp_dir = "src/models/temp/"
+    if not os.path.exists(temp_dir):
+        os.makedirs(temp_dir)
 
-    # Get the index of the provided movie title
-    idx = indices[titre]
+    # MLflow experiment
+    experiment_name = "Content_Pred"
+    mlflow.set_experiment(experiment_name)
+    
+    with mlflow.start_run(run_name="content_reco"):
+        # Calculate TF-IDF matrix calculate_matrix_tfidf is in src/features/build_tfidf_matrix.py
+        matrice_tfidf = calculer_matrice_tfidf(df_content_tags)
 
-    # Calculate similarity matrices
-    sim_cos = cosine_similarity(matrice_tfidf, matrice_tfidf)   
+        # Get the index of the provided movie title
+        idx = indices[titre]
 
-    # Calculate similarity scores between the provided movie and all other movies and sort in descsending order
-    scores_similarite = list(enumerate(sim_cos[idx]))
-    scores_similarite = sorted(scores_similarite, key=lambda x: x[1], reverse=True)
+        # Calculate similarity matrices
+        sim_cos = cosine_similarity(matrice_tfidf, matrice_tfidf)   
 
-    # Select the top similar movies excluding the provided movie itself
-    top_similar = scores_similarite[1:num_recommendations+1]
+        # Calculate similarity scores between the provided movie and all other movies and sort in descsending order
+        scores_similarite = list(enumerate(sim_cos[idx]))
+        scores_similarite = sorted(scores_similarite, key=lambda x: x[1], reverse=True)
 
-    # Create a dictionary containing recommended movie titles and their similarity scores
-    recommandations = [(indices.index[idx], score) for idx, score in top_similar]
-    recommandations = pd.DataFrame(recommandations)
-    recommandations = recommandations.rename(columns={0: 'title', 1: 'score'})
+        # Select the top similar movies excluding the provided movie itself
+        top_similar = scores_similarite[1:num_recommendations+1]
+
+        # Create a dictionary containing recommended movie titles and their similarity scores
+        recommandations = [(indices.index[idx], score) for idx, score in top_similar]
+        recommandations = pd.DataFrame(recommandations)
+        recommandations = recommandations.rename(columns={0: 'title', 1: 'score'})
+
+        # Save into a temporary csv file
+        content_pred_path = os.path.join(temp_dir, "content_pred.csv")
+        recommandations.head(num_recommendations).to_csv(content_pred_path, index=False)
+       
+        # Log predictions in MLflow
+        mlflow.log_param("film", titre)
+        mlflow.log_param("num_recommendations", num_recommendations)
+        mlflow.log_artifact(content_pred_path)
 
     return recommandations
 

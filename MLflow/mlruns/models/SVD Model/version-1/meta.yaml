@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1718016135661
+current_stage: None
+description: ''
+last_updated_timestamp: 1718016135661
+name: SVD Model
+run_id: f972a68a63de468f90aab5f10fc649b1
+run_link: ''
+source: /Users/aurore/Desktop/PROJET_RECO_MOVIE/fev24_cmlops_movie_reco/MLflow/mlruns/173226253391227261/f972a68a63de468f90aab5f10fc649b1/artifacts/svd_model
+status: READY
+status_message: null
+storage_location: /Users/aurore/Desktop/PROJET_RECO_MOVIE/fev24_cmlops_movie_reco/MLflow/mlruns/173226253391227261/f972a68a63de468f90aab5f10fc649b1/artifacts/svd_model
+user_id: null
+version: 1

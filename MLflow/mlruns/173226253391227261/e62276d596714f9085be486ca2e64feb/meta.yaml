@@ -1,0 +1,15 @@
+artifact_uri: /Users/aurore/Desktop/PROJET_RECO_MOVIE/fev24_cmlops_movie_reco/MLflow/mlruns/173226253391227261/e62276d596714f9085be486ca2e64feb/artifacts
+end_time: 1718011746032
+entry_point_name: ''
+experiment_id: '173226253391227261'
+lifecycle_stage: active
+run_id: e62276d596714f9085be486ca2e64feb
+run_name: evaluation
+run_uuid: e62276d596714f9085be486ca2e64feb
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1718010606935
+status: 3
+tags: []
+user_id: aurore
