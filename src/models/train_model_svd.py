@@ -18,11 +18,11 @@ cachedir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../cache'
 os.makedirs(cachedir, exist_ok=True)
 memory = Memory(cachedir, verbose=True)
 
-'''
+    
 # Define experiment name
 experiment_name = "SVD_Movie_Reco"
 mlflow.set_experiment(experiment_name)
-'''
+
 
 def evaluate_svd_model(measures=['rmse', 'mae'], cv=5):
     """
@@ -135,6 +135,11 @@ def train_svd_model():
         mlflow.log_params({"n_factors": 100, "n_epochs": 30, "lr_all": 0.01, "reg_all": 0.05})
         mlflow.sklearn.log_model(svd_model, "svd_model")
         mlflow.log_artifact(model_path)
+
+    saving_mlflow_model_time = time.time()
+    elapsed_time = saving_mlflow_model_time - saving_model_time
+    print(f"Saving model in ML Flow took: ", round(elapsed_time, 4), "seconds")
+    logger.info(f"Saving model in ML Flow took: {round(elapsed_time, 4)} seconds")
 
     # return svd_model
 
