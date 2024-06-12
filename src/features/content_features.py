@@ -12,10 +12,10 @@ def load_data():
     tuple
         Un tuple contenant les DataFrames des tags, des films, des tags de genome et des scores de genome.
     """
-    df_tags = pd.read_csv('../../data/raw/tags.csv')
-    df_movies = pd.read_csv('../../data/raw/movies.csv')
-    df_genome_tags = pd.read_csv('../../data/raw/genome-tags.csv')
-    df_genome_scores = pd.read_csv('../../data/raw/genome-scores.csv')
+    df_tags = pd.read_csv('../data/raw/tags.csv')
+    df_movies = pd.read_csv('../data/raw/movies.csv')
+    df_genome_tags = pd.read_csv('../data/raw/genome-tags.csv')
+    df_genome_scores = pd.read_csv('../data/raw/genome-scores.csv')
     return df_tags, df_movies, df_genome_tags, df_genome_scores
 
 def load_data_from_db():
@@ -178,8 +178,13 @@ if __name__ == "__main__":
     df_total_tags = merge_data(df_top_relevance_grouped, df_tags_grouped, df_movies)
     df_total_tags = process_df(df_total_tags)
 
+    # Check if directory exist otherwise it's created
+    interim_dir = "src/data/interim/"
+    if not os.path.exists(interim_dir):
+        os.makedirs(interim_dir)
+
     # Vérification de l'existence du fichier movies_tags.csv
-    file_path = 'src/data/interim/movies_tags.csv'
+    file_path = os.path.join(interim_dir, 'movies_tags.csv')
     if os.path.exists(file_path):
         os.remove(file_path)
     

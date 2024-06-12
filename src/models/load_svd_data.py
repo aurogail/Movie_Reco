@@ -1,11 +1,18 @@
 import pandas as pd
+import os
 import sys
 import gc
 import time
 sys.path.append('src')
 from surprise import Reader, Dataset
 from src.data.db.database_functions import get_engine
+from joblib import Memory
 
+cachedir = 'cache'
+os.makedirs(cachedir, exist_ok=True)
+memory = Memory(cachedir, verbose=True)
+
+@memory.cache
 def load_and_prepare_data(ratings_path="src/data/raw/ratings.csv", rating_scale=(0, 5)):
     """
     Description:
@@ -79,4 +86,5 @@ def load_and_prepare_data_from_db(rating_scale=(0, 5)):
     return df_surprise, train_set
 
 
-
+if __name__ == "__main__":
+    df_surprise, train_set = load_and_prepare_data_from_db()

@@ -1,14 +1,29 @@
 import pandas as pd
+import mlflow
+import mlflow.sklearn
 from surprise import SVD
 from surprise.model_selection import cross_validate
 import logging
 import pickle
+import numpy as np
+from joblib import Memory
+import os
 import time
 import sys
+
 sys.path.append('src')
 from src.models.load_svd_data import load_and_prepare_data, load_and_prepare_data_from_db
 
-def evaluate_svd_model(measures=['RMSE', 'MAE'], cv=5):
+cachedir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../cache'))
+os.makedirs(cachedir, exist_ok=True)
+memory = Memory(cachedir, verbose=True)
+'''
+# Define experiment name
+experiment_name = "SVD_Movie_Reco"
+mlflow.set_experiment(experiment_name)
+'''
+
+def evaluate_svd_model(measures=['rmse', 'mae'], cv=5):
     """
     Description:
     This function evaluates an SVD model using cross-validation on the provided dataset. 
@@ -22,18 +37,31 @@ def evaluate_svd_model(measures=['RMSE', 'MAE'], cv=5):
     - SVD: The trained SVD model.
     - dict: A dictionary containing cross-validation results.
     """
-
-    # df_surprise,_ = load_and_prepare_data()
     df_surprise,_ = load_and_prepare_data_from_db()
-    svd = SVD()
-    cv_results = cross_validate(svd, df_surprise, measures=measures, cv=cv, verbose=True )
+    svd = SVD(n_factors=100, n_epochs=30, lr_all=0.01, reg_all=0.05)
+
+    with mlflow.start_run(run_name="evaluation"):
+        cv_results = cross_validate(svd, df_surprise, measures=measures, cv=cv, verbose=True)
+        # Log metrics for each measure
+        for metric in measures:
+            mean_metric = cv_results[f'test_{metric}'].mean()
+            std_metric = cv_results[f'test_{metric}'].std()
+            mlflow.log_metric(f'{metric}_mean', mean_metric)
+            mlflow.log_metric(f'{metric}_std', std_metric)
+        
+        # Log the training and testing times
+        mlflow.log_metric('fit_time_mean', np.mean(cv_results['fit_time']))
+        mlflow.log_metric('fit_time_std', np.std(cv_results['fit_time']))
+        mlflow.log_metric('test_time_mean', np.mean(cv_results['test_time']))
+        mlflow.log_metric('test_time_std', np.std(cv_results['test_time']))
+
+        mlflow.log_params({"n_factors": 100, "n_epochs": 30, "lr_all": 0.01, "reg_all": 0.05})
+        mlflow.log_params({"measures": measures, "cv": cv})
     return svd, cv_results
 
-def train_svd_model():
 
-    #logger = logging.getLogger("airflow.task")
-    logger = logging.getLogger(__name__)
-    
+@memory.cache
+def train_svd_model():
     """
     Description:
     This function trains an SVD model on the provided dataset and saves the trained model to a pickle file. 
@@ -45,8 +73,9 @@ def train_svd_model():
     Returns:
     - SVD: The trained SVD model.
     """
+    logger = logging.getLogger(__name__)
 
-    # Start timer
+        # Start timer
     start_time = time.time()
 
     # Load and Prepare Data
@@ -90,7 +119,8 @@ def train_svd_model():
     logger.info(f"Loading data took: {round(elapsed_time, 4)} seconds")
 
     # Train SVD Model
-    svd_model = SVD().fit(train_set)
+
+    svd_model = SVD(n_factors=100, n_epochs=30, lr_all=0.01, reg_all=0.05).fit(train_set)
 
     training_svd_time = time.time()
     elapsed_time = training_svd_time - load_data_time
@@ -98,20 +128,26 @@ def train_svd_model():
     logger.info(f"Training data took: {round(elapsed_time, 4)} seconds")
 
     # Saving Model
-    filehandler = open("src/models/svd_model.pkl", "wb")
-    pickle.dump(svd_model, filehandler)
-    filehandler.close()
+
+    model_path = "src/models/svd_model.pkl"
+    with open(model_path, "wb") as filehandler:
+        pickle.dump(svd_model, filehandler)
 
     saving_model_time = time.time()
     elapsed_time = saving_model_time - training_svd_time
     print(f"Saving model took: ", round(elapsed_time, 4), "seconds")
     logger.info(f"Saving model took: {round(elapsed_time, 4)} seconds")
 
+    # Enregistrer le modèle entraîné et l'artefact
+    with mlflow.start_run(run_name="training"):
+        mlflow.log_params({"n_factors": 100, "n_epochs": 30, "lr_all": 0.01, "reg_all": 0.05})
+        mlflow.sklearn.log_model(svd_model, "svd_model")
+        mlflow.log_artifact(model_path)
 
+    return svd_model
 
-    # return svd_model
-
-def load_svd_model():
+@memory.cache
+def load_svd_model(filepath="src/models/svd_model.pkl"):
     """
     Description:
     This function loads a previously trained SVD model from a file and returns it.
@@ -141,7 +177,3 @@ if __name__ == "__main__":
     # filehandler = open("src/models/svd_model.pkl", "wb")
     # pickle.dump(svd_model, filehandler)
     # filehandler.close()
-
-    #print("Résultats de la validation croisée :")
-    #print(cv_results)
-    

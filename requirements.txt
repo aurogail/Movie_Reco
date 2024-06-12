@@ -12,13 +12,16 @@ pandas
 scikit-learn
 requests
 click
-python-dotenv
 pandas
 pytest
 psycopg2-binary
-fastapi
+fastapi==0.110.2
 httpx
+python-jose
 pyjwt
 httptools==0.1.* 
-uvicorn
+uvicorn==0.29.0
 SQLAlchemy
+mlflow==2.13.1
+joblib==1.4.0
+scikit-surprise== 1.1.3
