@@ -4,6 +4,8 @@ from fastapi import Request, HTTPException
 import jwt
 import pandas as pd
 import secrets
+import sys
+sys.path.append('../src')
 
 
 # Generate a JWT secret key and define the encryption algorithm

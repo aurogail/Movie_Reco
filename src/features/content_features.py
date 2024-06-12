@@ -11,10 +11,10 @@ def load_data():
     tuple
         Un tuple contenant les DataFrames des tags, des films, des tags de genome et des scores de genome.
     """
-    df_tags = pd.read_csv('../../data/raw/tags.csv')
-    df_movies = pd.read_csv('../../data/raw/movies.csv')
-    df_genome_tags = pd.read_csv('../../data/raw/genome-tags.csv')
-    df_genome_scores = pd.read_csv('../../data/raw/genome-scores.csv')
+    df_tags = pd.read_csv('../data/raw/tags.csv')
+    df_movies = pd.read_csv('../data/raw/movies.csv')
+    df_genome_tags = pd.read_csv('../data/raw/genome-tags.csv')
+    df_genome_scores = pd.read_csv('../data/raw/genome-scores.csv')
     return df_tags, df_movies, df_genome_tags, df_genome_scores
 
 def select_top_relevant_tags(df_genome_tags, df_genome_scores):

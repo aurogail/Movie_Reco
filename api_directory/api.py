@@ -2,6 +2,8 @@ from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 import logging
+import asyncio
+import threading
 import json
 from pydantic import BaseModel
 import sys
@@ -11,15 +13,11 @@ sys.path.append('../src')
 from src.models.content_predict import *
 from src.models.collab_predict import *
 from src.models.hybrid_predict import *
+from src.models.train_model_svd import load_svd_model
 
 # Cration of logger object
 logger = logging.getLogger(__name__)
 logging.basicConfig(filename='api_log.log', level=logging.INFO)
-
-# Load model when API start
-svd_model = load_svd_model()
-df_ratings = pd.read_csv("src/data/raw/ratings.csv")
-#df_surprise, train_set = load_and_prepare_data()
 
 app = FastAPI(
     title="Movie Recommandation's API",
@@ -44,6 +42,30 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+svd_model = None
+df_ratings = None
+
+def load_svd_model_sync():
+    return load_svd_model() 
+
+def load_dataframe_sync(filepath):
+    return pd.read_csv(filepath)
+
+async def load_models_and_data():
+    global svd_model, df_ratings
+    svd_model = await asyncio.to_thread(load_svd_model_sync)
+    df_ratings = await asyncio.to_thread(load_dataframe_sync, "src/data/raw/ratings.csv")
+
+# Load model when API start
+@app.on_event("startup")
+async def startup_event():
+    await load_models_and_data()
+
+@app.get("/")
+async def read_root():
+    model_status = "Model Loaded" if svd_model else "Model Not Loaded"
+    return {"model_status": model_status}
 
 # Log Middleware
 @app.middleware("http")
