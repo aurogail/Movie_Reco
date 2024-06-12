@@ -12,6 +12,8 @@ services:
     #command: ["copyto", "recofilm4:recofilm_db/recofilm_gdrive.sql", "db/recofilm_gdrive.sql", "-vv"]
     tty: true                           # Allocate a pseudo-TTY
     stdin_open: true                    # Keep stdin open
+    networks:
+      - mynetwork
     healthcheck:
       test: ["CMD", "test", "-f", "db/recofilm_gdrive.sql"]
       interval: 30s
@@ -174,8 +176,7 @@ services:
       - MLFLOW_BACKEND_URI=/app/MLflow/
     entrypoint: bash -c "mlflow server --host 0.0.0.0 --port 5001 --backend-store-uri /app/MLflow/"
     volumes:
-      - mlflow:/app/MLflow
-      #- ./MLFlow:/app/MLflow
+      - ./MLFlow:/app/MLflow
     networks:
       - mynetwork  
 
