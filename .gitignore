@@ -82,6 +82,9 @@ src/data/db/*.sql
 src/data/raw
 src/data/processed
 
+# exclude models
+src/models/*.pkl
+
 # Mac OS-specific storage files
 .DS_Store
 
