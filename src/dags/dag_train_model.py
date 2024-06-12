@@ -1,12 +1,12 @@
 from airflow import DAG
 from airflow.utils.dates import days_ago
 from airflow.operators.python import PythonOperator
-from src.models import train_svd_model
+from src.models.train_model_svd import train_svd_model
 from datetime import datetime, timedelta
 import sys
 
 # Add the tests directory to the Python path
-sys.path.append('/opt/airflow/src')
+sys.path.append('/opt/airflow/src/models')
 
 default_args = {
     'owner': 'admin',
@@ -22,7 +22,7 @@ my_dag = DAG(
     dag_id='train_model',
     description='train SVD model',
     tags=['train_model'],
-    schedule_interval='0 0-23 * * *',
+    schedule_interval='0 14 * * *',
     default_args={
         'owner': 'airflow',
         'start_date': days_ago(0, minute=1),

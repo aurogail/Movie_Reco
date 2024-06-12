@@ -18,21 +18,6 @@ def run_tests():
         print("Pytest Output (if any):\n", e.stdout)
         raise
 
-def run_tests_bu():
-    try:
-        result = subprocess.run(["pytest", "--version"], check=True, capture_output=True, text=True)
-        print("Test Output:\n", result.stdout)
-    except subprocess.CalledProcessError as e:
-        print("Error Output:\n", e.stderr)
-        raise
-
-def run_simple_tests():
-    try:
-        result = subprocess.run(["pytest", "--version"], check=True, capture_output=True, text=True)
-        print("Test Output:\n", result.stdout)
-    except subprocess.CalledProcessError as e:
-        print("Error Output:\n", e.stderr)
-        raise
 
 default_args = {
     'owner': 'admin',
