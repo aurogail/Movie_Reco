@@ -17,6 +17,7 @@ from src.models.load_svd_data import load_and_prepare_data, load_and_prepare_dat
 cachedir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../cache'))
 os.makedirs(cachedir, exist_ok=True)
 memory = Memory(cachedir, verbose=True)
+
 '''
 # Define experiment name
 experiment_name = "SVD_Movie_Reco"
@@ -79,16 +80,10 @@ def train_svd_model():
     start_time = time.time()
 
     # Load and Prepare Data
-    # _, train_set = load_and_prepare_data()
     _, train_set = load_and_prepare_data_from_db()
 
-    # Saving inner IDs and average rating of the model
-    # Convert the user ID to the internal ID used by the training set
-    #target_user = train_set.to_inner_uid(user_id)
     # Get the global mean rating
     moyenne = train_set.global_mean
-
-    print(moyenne)
     logger.info(moyenne)
 
     # Create the mapping from raw user IDs to inner user IDs
@@ -119,16 +114,13 @@ def train_svd_model():
     logger.info(f"Loading data took: {round(elapsed_time, 4)} seconds")
 
     # Train SVD Model
-
     svd_model = SVD(n_factors=100, n_epochs=30, lr_all=0.01, reg_all=0.05).fit(train_set)
 
     training_svd_time = time.time()
     elapsed_time = training_svd_time - load_data_time
-    print("Training data took: ", round(elapsed_time, 4), "seconds")
     logger.info(f"Training data took: {round(elapsed_time, 4)} seconds")
 
-    # Saving Model
-
+    # Saving Model as pkl file
     model_path = "src/models/svd_model.pkl"
     with open(model_path, "wb") as filehandler:
         pickle.dump(svd_model, filehandler)
@@ -138,13 +130,13 @@ def train_svd_model():
     print(f"Saving model took: ", round(elapsed_time, 4), "seconds")
     logger.info(f"Saving model took: {round(elapsed_time, 4)} seconds")
 
-    # Enregistrer le modèle entraîné et l'artefact
+    # Saving Model in MLFlow
     with mlflow.start_run(run_name="training"):
         mlflow.log_params({"n_factors": 100, "n_epochs": 30, "lr_all": 0.01, "reg_all": 0.05})
         mlflow.sklearn.log_model(svd_model, "svd_model")
         mlflow.log_artifact(model_path)
 
-    return svd_model
+    # return svd_model
 
 @memory.cache
 def load_svd_model(filepath="src/models/svd_model.pkl"):
@@ -165,15 +157,10 @@ def load_svd_model(filepath="src/models/svd_model.pkl"):
 if __name__ == "__main__":
 
     try:
-        svd_model = train_svd_model()
+        train_svd_model()
         print("Le modèle SVD a été entraîné et sauvegardé avec succès.")
     
     except Exception as e:
         # Handle the exception
         print(f"An error occurred: {e}")
         raise  # Re-raise the exception to mark the task as failed
-        
-    #svd, cv_results = evaluate_svd_model()
-    # filehandler = open("src/models/svd_model.pkl", "wb")
-    # pickle.dump(svd_model, filehandler)
-    # filehandler.close()

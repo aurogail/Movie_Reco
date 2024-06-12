@@ -13,8 +13,8 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - MEMORY=16g
-      - CPUS=8
+      - MEMORY=8G
+      - CPUS=4
       - MLFLOW_TRACKING_URI=http://mlflow:5001  
     networks:
       - my_network  

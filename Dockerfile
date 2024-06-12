@@ -34,8 +34,10 @@ COPY setup.py /opt/airflow/
 RUN virtualenv /opt/airflow/venv && \
     /opt/airflow/venv/bin/pip install --no-cache-dir -r /opt/airflow/requirements.txt 
 
-RUN pip install --upgrade pip setuptools wheel \
-    && pip install --no-use-pep517 scikit-surprise
+# RUN pip install --upgrade pip setuptools wheel \
+#     && pip install --no-use-pep517 scikit-surprise
+
+RUN pip install scikit-surprise
 
 # Set environment variable for virtualenv
 ENV PATH="/opt/airflow/venv/bin:$PATH"

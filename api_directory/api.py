@@ -53,9 +53,10 @@ def load_dataframe_sync(filepath):
     return pd.read_csv(filepath)
 
 async def load_models_and_data():
-    global svd_model, df_ratings
+    global svd_model
+    #global svd_model, df_ratings
     svd_model = await asyncio.to_thread(load_svd_model_sync)
-    df_ratings = await asyncio.to_thread(load_dataframe_sync, "src/data/raw/ratings.csv")
+    #df_ratings = await asyncio.to_thread(load_dataframe_sync, "src/data/raw/ratings.csv")
 
 # Load model when API start
 @app.on_event("startup")
@@ -182,7 +183,7 @@ async def get_recommendations(user_id: int = Depends(jwt_bearer)):
     """
 
     try:
-        recommendations = collab_reco(user_id, svd_model, df_ratings)  # Utilise le modèle chargé globalement
+        recommendations = collab_reco(user_id, svd_model)  # Utilise le modèle chargé globalement
         titles = recommendations['title']
         return {"user_id": user_id, "recommendations": titles.tolist()}  # Conversion en dictionnaire pour JSON
     except Exception as e:
@@ -205,9 +206,9 @@ async def get_preferences(user_id: int = Depends(jwt_bearer)):
     - HTTPException(403, details = ["Invalid authentication scheme.", "Invalid token or expired token.", "Invalid authorization code."]): If the token is not valid and the user cannot be authenticated.
     """
     # Obtaining top 3 movie genres for the user. The function called is in api_directory/preferences/
-    preferences = get_user_preferences(user_id, "src/data/processed/user_matrix.csv")
-
-    return {"user_id": user_id, "preferences": preferences}
+    
+    # preferences = get_user_preferences(user_id, "src/data/processed/user_matrix.csv")
+    # return {"user_id": user_id, "preferences": preferences}
 
 
 @app.post("/hybrid", name='Hybrid Filtering Recommandations', tags=['Recommandations'])

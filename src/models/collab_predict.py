@@ -7,7 +7,6 @@ from joblib import Memory
 
 sys.path.append('src')
 from src.models.train_model_svd import load_svd_model
-from src.models.load_svd_data import load_and_prepare_data_from_db
 from src.data.db.database_functions import get_engine
 
 cachedir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../cache'))

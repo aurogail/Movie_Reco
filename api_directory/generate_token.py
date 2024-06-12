@@ -5,7 +5,9 @@ import jwt
 import pandas as pd
 import secrets
 import sys
+
 sys.path.append('../src')
+from src.data.db.database_functions import get_engine
 
 
 # Generate a JWT secret key and define the encryption algorithm
@@ -29,7 +31,16 @@ def load_user_ids(dataset):
     return user_matrix["userId"].tolist()
 
 # List from load_user_ids saved in variable users
-users = load_user_ids("src/data/processed/user_matrix.csv")    # pour les tests API
+#users = load_user_ids("src/data/processed/user_matrix.csv")    # pour les tests API
+
+# Use SQL Alchemy engine
+engine, inspector = get_engine()
+
+# Generate a list of movies unrated by the user
+query = "SELECT * FROM users;"
+users = pd.read_sql(query, engine)
+users_list = users['user_id'].to_list()
+
 
 
 def sign_jwt(user_id: int):
@@ -142,7 +153,7 @@ class JWTBearer:
             if payload is None:
                 return False
             user_id = payload.get("user_id")
-            if user_id is None or user_id not in users:
+            if user_id is None or user_id not in users_list:
                 return False
             return user_id
         except Exception:

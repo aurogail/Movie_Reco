@@ -54,7 +54,7 @@ services:
       - "5432:5432"
 
   airflow-init:
-    image: chvalois/recofilm:0.2
+    image: chvalois/recofilm:0.3
     restart: on-failure
     depends_on:
       - postgres-airflow
@@ -82,7 +82,7 @@ services:
       - mynetwork
 
   airflow-webserver:
-    image: chvalois/recofilm:0.2
+    image: chvalois/recofilm:0.3
     restart: always
     depends_on:
       - postgres-airflow
@@ -110,7 +110,7 @@ services:
       - mynetwork
 
   airflow-scheduler:
-    image: chvalois/recofilm:0.2
+    image: chvalois/recofilm:0.3
     restart: always
     depends_on:
       - postgres-airflow
@@ -132,11 +132,47 @@ services:
     entrypoint: /bin/bash -c "pip install pytest && airflow scheduler"
     networks:
       - mynetwork
-    
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile_api
+    image: fastapi_image:latest 
+    container_name: api_docker 
+    volumes:
+      - ./src:/app/src
+      - ./api_log.log:/app/log/api_log.log
+    ports:
+      - "8000:8000"
+    environment:
+      - MEMORY=8G
+      - CPUS=4
+      - MLFLOW_TRACKING_URI=http://mlflow:5001  
+    networks:
+      - mynetwork  
+    depends_on:
+      - mlflow
+
+  mlflow:
+    build:
+      context: .  
+      dockerfile: Dockerfile_mlflow
+    image: mlflow_image:latest  
+    container_name: mlflow_docker 
+    ports:
+      - "5001:5001"
+    environment:
+      - MLFLOW_BACKEND_URI=/app/MLflow/
+      - PYTHONPATH=/app/MLflow/
+    volumes:
+      - ./MLflow:/app/MLflow
+    networks:
+      - mynetwork  
 
 volumes:
   pg_airflow_data:
   pg_project_data:
+  mlflow:
 
 networks:
   mynetwork:
