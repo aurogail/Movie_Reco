@@ -9,7 +9,7 @@ Project Organization
     ├── LICENSE
     ├── README.md          <- The top-level README for developers using this project.
     │
-    ├── api_directory      <- Scripts to execute the API
+    ├── api_directory      <- Scripts to execute the API
     │   ├── api_requirements.txt
     │   ├── api.py
     │   ├── generate_token.py 
