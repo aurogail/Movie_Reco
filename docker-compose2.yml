@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile_api
+    image: fastapi_image:latest 
+    container_name: api_docker 
+    volumes:
+      - ./src:/app/src
+      - ./api_log.log:/app/log/api_log.log
+    ports:
+      - "8000:8000"
+    environment:
+      - MEMORY=8G
+      - CPUS=4
+      - MLFLOW_TRACKING_URI=http://mlflow:5001  
+    networks:
+      - my_network  
+    depends_on:
+      - mlflow
+
+  mlflow:
+    build:
+      context: .  
+      dockerfile: Dockerfile_mlflow
+    image: mlflow_image:latest  
+    container_name: mlflow_docker 
+    ports:
+      - "5001:5001"
+    environment:
+      - MLFLOW_BACKEND_URI=/app/MLflow/
+    volumes:
+      - ./MLflow:/app/MLflow
+    networks:
+      - my_network  
+
+networks:
+  my_network:

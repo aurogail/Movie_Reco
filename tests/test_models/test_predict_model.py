@@ -1,7 +1,7 @@
 #import sys
 #sys.path.append('src')
 
-from models.predict_model import make_predictions
+from src.models.predict_model import make_predictions
 
 def test_number_predictions():
     """ Checks that the model returns 10 predictions"""
