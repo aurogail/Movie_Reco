@@ -8,6 +8,16 @@ Project Organization
 
     ├── LICENSE
     ├── README.md          <- The top-level README for developers using this project.
+    ├── api_directory  <- Scripts to execute the API
+    │   ├── api_requirements.txt    
+    │   ├── api.py 
+    │   ├── generate_token.py 
+    │   ├── preferences.py 
+    │   └── requests.txt  
+    │   │
+    ├── cache
+
+    
     ├── data
     │   ├── external       <- Data from third party sources.
     │   ├── interim        <- Intermediate data that has been transformed.
@@ -15,8 +25,6 @@ Project Organization
     │   └── raw            <- The original, immutable data dump.
     │
     ├── logs               <- Logs from training and predicting
-    │
-    ├── models             <- Trained and serialized models, model predictions, or model summaries
     │
     ├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
     │                         the creator's initials, and a short `-` delimited description, e.g.
@@ -32,20 +40,20 @@ Project Organization
     │
     ├── src                <- Source code for use in this project.
     │   ├── __init__.py    <- Makes src a Python module
-    │   ├── api_directory  <- Scripts to execute the API
-    │   │   ├── api_requirements.txt    
-    │   │   ├── api.py 
-    │   │   ├── generate_token.py 
-    │   │   ├── preferences.py 
-    │   │   └── requests.txt  
-    │   │
+    │   ├── dags           <- Contains Airflow DAGs
     │   ├── data           <- Scripts to download or generate data
+    │   │   ├── db
+    │   │   │   ├── initialize_database.py    
+    │   │   ├── interim    
+    │   │   ├── processed    
+    │   │   ├── raw
     │   │   ├── check_structure.py    
     │   │   ├── import_raw_data.py 
     │   │   └── make_dataset.py
     │   │
     │   ├── features       <- Scripts to turn raw data into features for modeling
-    │   │   └── build_features.py
+    │   │   ├── content_features.py
+    │   │   └── build_tfidf_matrix.py
     │   │
     │   ├── models         <- Scripts to train models and then use trained models to make
     │   │   │                 predictions
@@ -121,5 +129,5 @@ Example of possible requests:
 # /preferences
 `curl -X GET "http://localhost:8000/preferences" -H "Authorization: Bearer <token>"`
 
-# /content_reco
-`curl -X POST "http://localhost:8000/content_reco" -H "Authorization: Bearer <token>" -H "Content-Type: application/json" -d '{"titre": "The Dark Knight", "mat_sim": "cosinus"}`'
+# /hybrid
+`curl -X POST "http://localhost:8000/hybrid" -H "Authorization: Bearer <token>" -H "Content-Type: application/json" -d '{"titre": "Braveheart (1995)"}`
