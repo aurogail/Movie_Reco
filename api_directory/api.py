@@ -135,7 +135,7 @@ async def login(user_data: UserLogin):
     Raises:
     - HTTPException(404, detail="User not found"): If details, user_id is not recognized, an HTTP 404 exception is raised.
     """
-
+    
     # Extract user_id from class UserLogin
     user_id = user_data.user_id
     
@@ -232,7 +232,7 @@ async def hybrid_reco(request: HybridRecoRequest, user_id: int = Depends(jwt_bea
     if request.titre not in indices.index:
         raise HTTPException(status_code=404, detail="Unknown movie title.")
     try:
-        recommendations = hybride_reco(user_id, svd_model, df_ratings, request.titre) 
+        recommendations = hybride_reco(user_id, svd_model, request.titre) 
         titles = recommendations['title']
         return {"user_id": user_id, "recommendations": titles.tolist()}  # Conversion en dictionnaire pour JSON
     except Exception as e:

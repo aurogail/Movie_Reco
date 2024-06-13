@@ -60,13 +60,13 @@ def content_based_reco(titre, num_recommendations=10):
         top_similar = scores_similarite[1:num_recommendations+1]
 
         # Create a dictionary containing recommended movie titles and their similarity scores
-        recommandations = [(indices.index[idx], score) for idx, score in top_similar]
-        recommandations = pd.DataFrame(recommandations)
-        recommandations = recommandations.rename(columns={0: 'title', 1: 'score'})
+        recommendations = [(indices.index[idx], score) for idx, score in top_similar]
+        recommendations = pd.DataFrame(recommendations)
+        recommendations = recommendations.rename(columns={0: 'title', 1: 'score'})
 
         # Save into a temporary csv file
         content_pred_path = os.path.join(temp_dir, "content_pred.csv")
-        recommandations.head(num_recommendations).to_csv(content_pred_path, index=False)
+        recommendations.head(num_recommendations).to_csv(content_pred_path, index=False)
        
         # Log predictions in MLflow
         mlflow.log_param("film", titre)

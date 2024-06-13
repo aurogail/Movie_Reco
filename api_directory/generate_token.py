@@ -39,7 +39,7 @@ engine, inspector = get_engine()
 # Generate a list of movies unrated by the user
 query = "SELECT * FROM users;"
 users = pd.read_sql(query, engine)
-users_list = users['user_id'].to_list()
+users = users['user_id'].to_list()
 
 
 
@@ -153,7 +153,7 @@ class JWTBearer:
             if payload is None:
                 return False
             user_id = payload.get("user_id")
-            if user_id is None or user_id not in users_list:
+            if user_id is None or user_id not in users:
                 return False
             return user_id
         except Exception:

@@ -73,6 +73,9 @@ target/
 # Spyder
 .spyproject/
 
+# Spyder
+MLFlow/
+
 # Jupyter NB Checkpoints
 .ipynb_checkpoints/
 
@@ -84,6 +87,8 @@ src/data/processed
 
 # exclude models
 src/models/*.pkl
+src/models/*.csv
+src/models/temp/
 
 # Mac OS-specific storage files
 .DS_Store

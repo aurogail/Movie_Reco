@@ -174,7 +174,7 @@ services:
       - "5001:5001"
     environment:
       - MLFLOW_BACKEND_URI=/app/MLflow/
-    entrypoint: bash -c "mlflow server --host 0.0.0.0 --port 5001 --backend-store-uri /app/MLflow/"
+    # entrypoint: bash -c "mlflow server --host 0.0.0.0 --port 5001 --backend-store-uri /app/MLflow/"
     volumes:
       - ./MLFlow:/app/MLflow
     networks:
