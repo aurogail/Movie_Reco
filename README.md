@@ -9,18 +9,13 @@ Project Organization
     ├── LICENSE
     ├── README.md          <- The top-level README for developers using this project.
     ├── api_directory  <- Scripts to execute the API
-    │   ├── api_requirements.txt    
-    │   ├── api.py 
+    │   ├── api_requirements.txt
+    │   ├── api.py
     │   ├── generate_token.py 
-    │   ├── preferences.py 
-    │   └── requests.txt  
+    │   ├── preferences.py
+    │   └── requests.txt
     │   │
     ├── cache    
-    ├── data
-    │   ├── external       <- Data from third party sources.
-    │   ├── interim        <- Intermediate data that has been transformed.
-    │   ├── processed      <- The final, canonical data sets for modeling.
-    │   └── raw            <- The original, immutable data dump.
     │
     ├── logs               <- Logs from training and predicting
     │
@@ -42,9 +37,9 @@ Project Organization
     │   ├── data           <- Scripts to download or generate data
     │   │   ├── db
     │   │   │   └── initialize_database.py    
-    │   │   ├── interim    
-    │   │   ├── processed    
-    │   │   ├── raw
+    │   │   ├── interim                     <- Intermediate data that has been transformed.
+    │   │   ├── processed                   <- The final, canonical data sets for modeling.
+    │   │   ├── raw                         <- The original, immutable data dump.
     │   │   ├── check_structure.py    
     │   │   ├── import_raw_data.py 
     │   │   └── make_dataset.py
