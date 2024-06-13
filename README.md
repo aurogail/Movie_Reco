@@ -6,6 +6,7 @@ This project is a starting Pack for MLOps projects based on the subject "movie_r
 Project Organization
 ------------
 
+
     ├── LICENSE
     ├── README.md          <- The top-level README for developers using this project.
     ├── data
