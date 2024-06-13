@@ -60,7 +60,7 @@ Project Organization
     ├── tests              <- Unit tests
     
 
---------
+------------
 
 ## Steps to follow 
 
