@@ -15,9 +15,7 @@ Project Organization
     │   ├── preferences.py 
     │   └── requests.txt  
     │   │
-    ├── cache
-
-    
+    ├── cache    
     ├── data
     │   ├── external       <- Data from third party sources.
     │   ├── interim        <- Intermediate data that has been transformed.
