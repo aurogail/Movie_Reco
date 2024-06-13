@@ -56,7 +56,7 @@ services:
       - "5432:5432"
 
   airflow-init:
-    image: chvalois/recofilm:0.3
+    image: chvalois/recofilm:0.4
     restart: on-failure
     depends_on:
       - postgres-airflow
@@ -86,7 +86,7 @@ services:
       - mynetwork
 
   airflow-webserver:
-    image: chvalois/recofilm:0.3
+    image: chvalois/recofilm:0.4
     restart: always
     depends_on:
       - postgres-airflow
@@ -116,7 +116,7 @@ services:
       - mynetwork
 
   airflow-scheduler:
-    image: chvalois/recofilm:0.3
+    image: chvalois/recofilm:0.4
     restart: always
     depends_on:
       - postgres-airflow
@@ -153,12 +153,12 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - MEMORY=8G
-      - CPUS=4
+      - MEMORY=16G
+      - CPUS=8
       - MLFLOW_TRACKING_URI=http://mlflow:5001
     env_file:
       - .env
-    entrypoint: bash -c "uvicorn api_directory.api:app --host 0.0.0.0 --port 8000"
+    # entrypoint: bash -c "uvicorn api_directory.api:app --host 0.0.0.0 --port 8000"
     networks:
       - mynetwork  
     depends_on:
