@@ -26,16 +26,6 @@ def check_table_details(table_name, expected_schema):
             expected_type = expected_schema[column_name]['type']
             actual_type = str(column['type'])
             assert expected_type in actual_type, f"Expected type {expected_type} for column {column_name}, but got {actual_type}"
-            
-            """expected_nullable = expected_schema[column_name]['nullable']
-            actual_nullable = column['nullable']
-            assert expected_nullable == actual_nullable, f"Expected nullable={expected_nullable} for column {column_name}, but got nullable={actual_nullable}"
-
-            expected_primary_key = expected_schema[column_name]['primary_key']
-            actual_primary_key = column['primary_key']
-            assert expected_primary_key == actual_primary_key, f"Expected primary_key={expected_primary_key} for column {column_name}, but got primary_key={actual_primary_key}"
-            """
-
 
 
 def test_postgre_database_exists():
@@ -52,7 +42,7 @@ def test_postgre_database_exists():
         'ratings': ['user_id', 'movie_id', 'rating', 'created_at', 'updated_at'],
         'tags': ['user_id', 'movie_id', 'tag', 'created_at', 'updated_at'],
         'users': ['user_id', 'user_key', 'updated_at'],
-        #'predicted_ratings': ['pred_id', 'predicted_rating', 'model', 'feedback'],
+        'predicted_ratings': ['pred_id', 'predicted_rating', 'model', 'feedback'],
         'recommendations': ['reco_id', 'movie_id', 'user_id', 'reco_type', 'reco_datetime', 'user_feedback']
     }
 

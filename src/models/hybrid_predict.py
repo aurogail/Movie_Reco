@@ -81,8 +81,7 @@ if __name__ == "__main__":
     elapsed_time = loading_model_time - start_time
     print("Loading model took: ", round(elapsed_time, 4), "seconds")
 
-    svd_model = load_svd_model()
     user_id = 1000
     titre = "Braveheart (1995)"
-    recommandations_hybrides = hybride_reco(user_id, svd_model, titre, num_recommendations=10, alpha=0.7)
-    print(recommandations_hybrides)
+    recommendations_hybrides = hybride_reco(user_id, svd_model, titre, num_recommendations=10, alpha=0.7)
+    print(recommendations_hybrides)
