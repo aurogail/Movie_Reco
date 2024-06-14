@@ -54,7 +54,7 @@ def execute_pgsql_query(filename):
 
 
 
-def init_csv_to_sql_2(table_name, csv_path, mapping):
+def init_csv_to_sql(table_name, csv_path, mapping):
     """ Feed a table in the postgresDB from a CSV file"""
 
     print(f'--- TABLE {table_name} ---')
@@ -93,26 +93,6 @@ def init_csv_to_sql_2(table_name, csv_path, mapping):
     finally:
         cursor.close()
         conn.close()
-
-
-def init_csv_to_sql(table_name, csv_path, mapping):
-    """ Feed a table in the postgresDB from a CSV file"""
-    df = pd.read_csv(csv_path)
-    df = df.rename(columns = mapping)
-    now = datetime.now()
-    df['updated_at'] = now
-
-    # Insertion with chunks to reduce memory usage
-    chunksize = 100000
-
-    try:
-        print(f'Injecting initial data into {table_name}')
-        df.to_sql(table_name, engine, if_exists='append', index=False, method='multi', chunksize=chunksize)
-        print(f'Injecting of table {table_name} succeeded')
-
-    except Exception as e:
-        print(e)
-        print(f'Injection of table {table_name} failed')
 
 def create_initial_users():
     """ Feed the table 'users' in the postgresDB """

@@ -5,20 +5,21 @@ services:
   rclone:
     image: rclone/rclone
     volumes:
-      - ./src/config:/config/rclone         # Local path to Rclone config directory
+      - ./src/config:/config/rclone
       - pg_project_data:/data
 
     command: config
-    #command: ["copyto", "recofilm4:recofilm_db/recofilm_gdrive.sql", "db/recofilm_gdrive.sql", "-vv"]
-    tty: true                           # Allocate a pseudo-TTY
-    stdin_open: true                    # Keep stdin open
+    #command: ["copyto", "recofilm:recofilm_db/recofilm_gdrive_300K.sql", "db/recofilm_gdrive.sql", "-vv"]
+    tty: true                           
+    stdin_open: true                    
     networks:
       - mynetwork
-    healthcheck:
-      test: ["CMD", "test", "-f", "db/recofilm_gdrive.sql"]
-      interval: 30s
-      timeout: 5s
-      retries: 5
+    # healthcheck:
+    #   test: ["CMD", "test", "-f", "db/recofilm_gdrive.sql"]
+    #   interval: 30s
+    #   timeout: 5s
+    #   retries: 5
+    #   start_period: 60s
 
   postgres-db:
     image: postgres:16
@@ -158,7 +159,6 @@ services:
       - MLFLOW_TRACKING_URI=http://mlflow:5001
     env_file:
       - .env
-    # entrypoint: bash -c "uvicorn api_directory.api:app --host 0.0.0.0 --port 8000"
     networks:
       - mynetwork  
     depends_on:
@@ -174,7 +174,6 @@ services:
       - "5001:5001"
     environment:
       - MLFLOW_BACKEND_URI=/app/MLflow/
-    # entrypoint: bash -c "mlflow server --host 0.0.0.0 --port 5001 --backend-store-uri /app/MLflow/"
     volumes:
       - ./MLFlow:/app/MLflow
     networks:
