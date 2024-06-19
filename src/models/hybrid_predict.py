@@ -3,8 +3,8 @@ import mlflow
 import os
 import sys
 sys.path.append('src')
-from src.models.content_predict import *
-from src.models.collab_predict import *
+from src.models.content_predict import content_based_reco
+from src.models.collab_predict import collab_reco
 from src.models.train_model_svd import load_svd_model
 
 def hybride_reco(user_id, svd_model, titre, num_recommendations=10, alpha=0.8, n=1000):

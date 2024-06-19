@@ -4,7 +4,6 @@ services:
 
   rclone:
     image: rclone/rclone
-    container_name: rclone_docker 
     volumes:
       - ./src/config:/config/rclone
       - pg_project_data:/data
@@ -59,7 +58,6 @@ services:
 
   airflow-init:
     image: chvalois/recofilm:0.4
-    container_name: airflow-init
     restart: on-failure
     depends_on:
       - postgres-airflow
@@ -90,7 +88,6 @@ services:
 
   airflow-webserver:
     image: chvalois/recofilm:0.4
-    container_name: airflow-webserver
     restart: always
     depends_on:
       - postgres-airflow
@@ -121,7 +118,6 @@ services:
 
   airflow-scheduler:
     image: chvalois/recofilm:0.4
-    container_name: airflow-scheduler
     restart: always
     depends_on:
       - postgres-airflow
@@ -149,11 +145,12 @@ services:
   api:
     build:
       context: .
-      dockerfile: Dockerfile_api
+      dockerfile: ./dockerfiles/Dockerfile_api
     image: fastapi_image:latest 
     container_name: api_docker 
     volumes:
       - ./src:/app/src
+      - ./api_directory/logs/:/app/logs/
     ports:
       - "8000:8000"
     environment:
@@ -170,15 +167,13 @@ services:
   mlflow:
     build:
       context: .  
-      dockerfile: Dockerfile_mlflow
+      dockerfile: ./dockerfiles/Dockerfile_mlflow
     image: mlflow_image:latest  
     container_name: mlflow_docker 
     ports:
       - "5001:5001"
-    environment:
-      - MLFLOW_BACKEND_URI=/app/MLflow/
     volumes:
-      - ./MLFlow:/app/MLflow
+      - ./MLFlow:/app/
     networks:
       - mynetwork  
 

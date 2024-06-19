@@ -12,7 +12,7 @@ import time
 import sys
 
 sys.path.append('src')
-from src.models.load_svd_data import load_and_prepare_data, load_and_prepare_data_from_db
+from src.models.load_svd_data import load_and_prepare_data_from_db
 
 cachedir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../cache'))
 os.makedirs(cachedir, exist_ok=True)
@@ -62,7 +62,6 @@ def evaluate_svd_model(measures=['rmse', 'mae'], cv=5):
     #return svd, cv_results
 
 
-#@memory.cache
 def train_svd_model():
     """
     Description:

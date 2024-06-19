@@ -7,17 +7,16 @@ import threading
 import json
 from pydantic import BaseModel
 import sys
-from api_directory.preferences import *
+from api_directory.preferences import get_user_preferences
 from api_directory.generate_token import *
 sys.path.append('../src')
-from src.models.content_predict import *
-from src.models.collab_predict import *
-from src.models.hybrid_predict import *
+from src.models.collab_predict import collab_reco, generate_new_recommendations
+from src.models.hybrid_predict import hybride_reco
 from src.models.train_model_svd import load_svd_model
 
 # Cration of logger object
 logger = logging.getLogger(__name__)
-logging.basicConfig(filename='api_log.log', level=logging.INFO)
+logging.basicConfig(filename='./app/logs/api_log.log', level=logging.INFO)
 
 app = FastAPI(
     title="Movie Recommandation's API",
@@ -49,14 +48,10 @@ df_ratings = None
 def load_svd_model_sync():
     return load_svd_model() 
 
-def load_dataframe_sync(filepath):
-    return pd.read_csv(filepath)
-
 async def load_models_and_data():
     global svd_model
     #global svd_model, df_ratings
     svd_model = await asyncio.to_thread(load_svd_model_sync)
-    #df_ratings = await asyncio.to_thread(load_dataframe_sync, "src/data/raw/ratings.csv")
 
 # Load model when API start
 @app.on_event("startup")
