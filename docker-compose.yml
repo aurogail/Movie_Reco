@@ -4,6 +4,7 @@ services:
 
   rclone:
     image: rclone/rclone
+    container_name: rclone_docker 
     volumes:
       - ./src/config:/config/rclone
       - pg_project_data:/data
@@ -58,6 +59,7 @@ services:
 
   airflow-init:
     image: chvalois/recofilm:0.4
+    container_name: airflow-init
     restart: on-failure
     depends_on:
       - postgres-airflow
@@ -88,6 +90,7 @@ services:
 
   airflow-webserver:
     image: chvalois/recofilm:0.4
+    container_name: airflow-webserver
     restart: always
     depends_on:
       - postgres-airflow
@@ -118,6 +121,7 @@ services:
 
   airflow-scheduler:
     image: chvalois/recofilm:0.4
+    container_name: airflow-scheduler
     restart: always
     depends_on:
       - postgres-airflow
@@ -150,7 +154,6 @@ services:
     container_name: api_docker 
     volumes:
       - ./src:/app/src
-      - ./api_log.log:/app/log/api_log.log
     ports:
       - "8000:8000"
     environment:

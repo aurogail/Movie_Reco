@@ -69,30 +69,34 @@ async def read_root():
     return {"model_status": model_status}
 
 # Log Middleware
-@app.middleware("http")
 async def log_requests(request: Request, call_next):
     start_time = datetime.utcnow()
 
     user_id = None
 
+    # Extraction du user_id pour les requêtes GET et POST
     if request.method in ["POST", "PUT"]:
         try:
             request_body = await request.json()
             user_id = request_body.get("user_id")
         except Exception:
-            pass 
+            pass
 
     if request.method == "GET":
         user_id = request.query_params.get("user_id")
 
-    response = await call_next(request)
+    # Extraction du user_id à partir du JWT si aucun user_id n'a été trouvé
+    if not user_id:
+        auth_header = request.headers.get("Authorization")
+        if auth_header and auth_header.startswith("Bearer "):
+            token = auth_header.split(" ")[1]
+            try:
+                payload = decode_jwt(token)  # Assurez-vous que la fonction decode_jwt retourne le payload
+                user_id = payload.get("user_id")
+            except Exception:
+                pass
 
-    if not user_id and response.media_type == "application/json":
-        try:
-            response_json = await response.json()
-            user_id = response_json.get("user_id")
-        except Exception:
-            pass 
+    response = await call_next(request)
 
     process_time = datetime.utcnow() - start_time
 
@@ -106,7 +110,6 @@ async def log_requests(request: Request, call_next):
     })
 
     return response
-
 
 # Object containing JWTBearer class from api_directory/generate_token.py
 jwt_bearer = JWTBearer()
@@ -189,7 +192,7 @@ async def get_recommendations(user_id: int = Depends(jwt_bearer)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) 
 
-
+'''
 @app.get("/preferences", name='Top Movie Genres', tags=['Recommandations'])
 async def get_preferences(user_id: int = Depends(jwt_bearer)):
     """
@@ -207,9 +210,10 @@ async def get_preferences(user_id: int = Depends(jwt_bearer)):
     """
     # Obtaining top 3 movie genres for the user. The function called is in api_directory/preferences/
     
-    # preferences = get_user_preferences(user_id, "src/data/processed/user_matrix.csv")
-    # return {"user_id": user_id, "preferences": preferences}
+    preferences = get_user_preferences(user_id, "src/data/processed/user_matrix.csv")
+    return {"user_id": user_id, "preferences": preferences}
 
+'''
 
 @app.post("/hybrid", name='Hybrid Filtering Recommandations', tags=['Recommandations'])
 async def hybrid_reco(request: HybridRecoRequest, user_id: int = Depends(jwt_bearer)):
