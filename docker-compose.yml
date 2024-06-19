@@ -7,27 +7,16 @@ services:
     volumes:
       - ./src/config:/config/rclone
       - pg_project_data:/data
-
     command: config
-    #command: ["copyto", "recofilm:recofilm_db/recofilm_gdrive_300K.sql", "db/recofilm_gdrive.sql", "-vv"]
     tty: true                           
     stdin_open: true                    
     networks:
       - mynetwork
-    # healthcheck:
-    #   test: ["CMD", "test", "-f", "db/recofilm_gdrive.sql"]
-    #   interval: 30s
-    #   timeout: 5s
-    #   retries: 5
-    #   start_period: 60s
+
 
   postgres-db:
     image: postgres:16
     container_name: postgres-db
-    # depends_on:
-    #     rclone:
-    #       condition: service_healthy
-    # command: ["pg_restore", "-U", "admin", "-d", "recofilm_db", "-F", "c", "var/lib/postgresql/data/recofilm_gdrive.sql"]
     env_file:
       - .env
     volumes:
@@ -41,6 +30,66 @@ services:
     ports:
       - "5433:5432"
 
+  postgres_exporter:
+    image: quay.io/prometheuscommunity/postgres-exporter:latest
+    env_file:
+      - .env
+    environment:
+      DATA_SOURCE_NAME: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres-db:5432/${POSTGRES_DB}?sslmode=disable
+    ports:
+      - "9187:9187"
+    networks:
+      - mynetwork
+    depends_on:
+      - postgres-db
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - mynetwork
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    networks:
+      - mynetwork
+    depends_on:
+      - prometheus
+    volumes:
+      - ./grafana/dashboards/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+      - ./grafana/datasources/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+
+  cadvisor:
+    image: google/cadvisor:latest
+    ports:
+      - "8081:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /sys:/sys
+      - /var/lib/docker:/var/lib/docker
+    networks:
+      - mynetwork
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+    ports:
+      - "9100:9100"
+    networks:
+      - mynetwork
 
   postgres-airflow:
     image: postgres:16
