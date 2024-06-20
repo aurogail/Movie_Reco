@@ -15,6 +15,13 @@ def cleanup():
     if os.path.exists(TEST_ARTIFACTS_DIR):
         os.system(f"rm -r {TEST_ARTIFACTS_DIR}")
 
+# Test de la fonction load_svd_model
+def test_load_svd_model():
+    svd_model = load_svd_model()
+
+    # Vérifier que le modèle chargé est un objet SVD
+    assert isinstance(svd_model, type(SVD()))
+
 # Test de la fonction evaluate_svd_model
 def test_evaluate_svd_model(cleanup):
     svd_model, cv_results = evaluate_svd_model()
@@ -41,12 +48,7 @@ def test_train_svd_model(cleanup):
     # Vérifier que les artefacts de MLflow ont été enregistrés
     assert os.path.exists(f"{TEST_ARTIFACTS_DIR}/training")
 
-# Test de la fonction load_svd_model
-def test_load_svd_model():
-    svd_model = load_svd_model()
 
-    # Vérifier que le modèle chargé est un objet SVD
-    assert isinstance(svd_model, type(SVD()))
 
 if __name__ == "__main__":
     pytest.main([__file__])

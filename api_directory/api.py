@@ -184,6 +184,7 @@ async def get_recommendations(user_id: int = Depends(jwt_bearer)):
 
     try:
         recommendations = collab_reco(user_id, svd_model)  # Utilise le modèle chargé globalement
+        print(recommendations)
         titles = recommendations['title']
         return {"user_id": user_id, "recommendations": titles.tolist()}  # Conversion en dictionnaire pour JSON
     except Exception as e:

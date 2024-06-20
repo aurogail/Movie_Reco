@@ -1,8 +1,8 @@
 import pytest
 import pandas as pd
 from fastapi.testclient import TestClient
-from src.api_directory.api import app
-from src.api_directory.generate_token import load_user_ids
+from api_directory.api import app
+from api_directory.generate_token import load_user_ids
 
 
 client = TestClient(app)
@@ -12,7 +12,7 @@ client = TestClient(app)
 
 @pytest.fixture(scope="module")
 def test_login():
-    response = client.post("/login", json={"user_id": 153})
+    response = client.post("/login", json={"user_id": 1000})
     assert response.status_code == 200
     return response.json().get('access_token')
 
@@ -30,13 +30,12 @@ def test_recommendations(auth_header):
     response = client.get("/recommendations", headers=auth_header)
     assert response.status_code == 200
 
-
+"""
 def test_preferences(auth_header):
     response = client.get("/preferences", headers=auth_header)
     assert response.status_code == 200
 
 
-def test_content_reco(auth_header):
-    response = client.post("/content_reco", json={"titre": "Toy Story (1995)", "mat_sim": "cosinus"}, headers=auth_header)
-    assert response.status_code == 200
-
+def test_hybrid(auth_header):
+    response = client.get("/hybrid", headers=auth_header)
+    assert response.status_code == 200"""

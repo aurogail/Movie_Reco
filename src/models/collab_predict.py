@@ -57,7 +57,7 @@ def collab_reco(user_id, svd_model, num_recommendations=10):
         # Generate predictions using the SVD model
         predictions_svd = svd_model.test(anti_testset)
         predictions_svd = pd.DataFrame(predictions_svd)
-        
+              
         # Get the titles of the movies
         query = "SELECT * FROM movies;"
         df_movies = pd.read_sql(query, engine)
