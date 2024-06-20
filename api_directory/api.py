@@ -7,12 +7,13 @@ import sys
 from api_directory.preferences import get_user_preferences
 from api_directory.generate_token import *
 sys.path.append('../src')
+from src.models.content_predict import *
 from src.models.collab_predict import collab_reco, generate_new_recommendations
 from src.models.hybrid_predict import hybride_reco
 from src.models.train_model_svd import load_svd_model
 
 # Cration of logger object
-log_file_path = '/app/api_directory/logs/api_log.log'
+log_file_path = './api_directory/logs/api_log.log'
 
 app = FastAPI(
     title="Movie Recommandation's API",
@@ -45,7 +46,6 @@ def load_svd_model_sync():
 
 async def load_models_and_data():
     global svd_model
-    #global svd_model, df_ratings
     svd_model = await asyncio.to_thread(load_svd_model_sync)
 
 # Load model when API start
@@ -159,7 +159,7 @@ async def welcome(user_id: int = Depends(jwt_bearer)):
     return {"message": f"Welcome {user_id}"}
 
 @app.get("/recommendations", name='Collaborative Filtering Recommandations', tags=['Recommandations'])
-async def get_recommendations(user_id: int = Depends(jwt_bearer)):
+async def get_recommendations(user_id: int = Depends(jwt_bearer), svd_model=svd_model):
     """
     Description:
     This endpoint retrieves personalized movie recommendations for the authenticated user based on collaborative filtering.
@@ -178,6 +178,10 @@ async def get_recommendations(user_id: int = Depends(jwt_bearer)):
         recommendations = collab_reco(user_id, svd_model)  # Utilise le modèle chargé globalement
         titles = recommendations['title']
         return {"user_id": user_id, "recommendations": titles.tolist()}  # Conversion en dictionnaire pour JSON
+    except KeyError as e:
+        raise HTTPException(status_code=404, detail="KeyError: Required data not found.")
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail="ValueError: Invalid input data.")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) 
 
@@ -205,7 +209,7 @@ async def get_preferences(user_id: int = Depends(jwt_bearer)):
 '''
 
 @app.post("/hybrid", name='Hybrid Filtering Recommandations', tags=['Recommandations'])
-async def hybrid_reco(request: HybridRecoRequest, user_id: int = Depends(jwt_bearer)):
+async def hybrid_reco(request: HybridRecoRequest, user_id: int = Depends(jwt_bearer), svd_model=svd_model):
     """
     Description:
     This endpoint retrieves personalized movie recommendations for the authenticated user based on content-based filtering.
@@ -230,3 +234,4 @@ async def hybrid_reco(request: HybridRecoRequest, user_id: int = Depends(jwt_bea
         return {"user_id": user_id, "recommendations": titles.tolist()}  # Conversion en dictionnaire pour JSON
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) 
+        

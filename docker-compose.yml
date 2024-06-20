@@ -4,6 +4,7 @@ services:
 
   rclone:
     image: rclone/rclone
+    container_name: rclone_docker
     volumes:
       - ./src/config:/config/rclone
       - pg_project_data:/data
@@ -23,7 +24,7 @@ services:
 
   postgres-db:
     image: postgres:16
-    container_name: postgres-db
+    container_name: postgres_db
     # depends_on:
     #     rclone:
     #       condition: service_healthy
@@ -44,7 +45,7 @@ services:
 
   postgres-airflow:
     image: postgres:16
-    container_name: postgres-airflow
+    container_name: postgres_airflow
     environment:
       POSTGRES_USER: airflow
       POSTGRES_PASSWORD: airflow
@@ -58,6 +59,7 @@ services:
 
   airflow-init:
     image: chvalois/recofilm:0.4
+    container_name: airflow_init
     restart: on-failure
     depends_on:
       - postgres-airflow
@@ -88,6 +90,7 @@ services:
 
   airflow-webserver:
     image: chvalois/recofilm:0.4
+    container_name: airflow_webserver
     restart: always
     depends_on:
       - postgres-airflow
@@ -118,6 +121,7 @@ services:
 
   airflow-scheduler:
     image: chvalois/recofilm:0.4
+    container_name: airflow_scheduler
     restart: always
     depends_on:
       - postgres-airflow

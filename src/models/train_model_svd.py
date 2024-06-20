@@ -145,7 +145,7 @@ def train_svd_model():
     # return svd_model
 
 @memory.cache
-def load_svd_model(filepath="src/models/svd_model.pkl"):
+def load_svd_model(filepath="./src/models/svd_model.pkl"):
     """
     Description:
     This function loads a previously trained SVD model from a file and returns it.
@@ -157,7 +157,7 @@ def load_svd_model(filepath="src/models/svd_model.pkl"):
     - SVD: The loaded SVD model.
     """
     
-    with open("src/models/svd_model.pkl", "rb") as filehandler:
+    with open(filepath, "rb") as filehandler:
         return pickle.load(filehandler)
 
 if __name__ == "__main__":
