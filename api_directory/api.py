@@ -1,10 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
-import logging
 import asyncio
-import threading
-import json
 from pydantic import BaseModel
 import sys
 from api_directory.preferences import get_user_preferences
@@ -15,8 +12,7 @@ from src.models.hybrid_predict import hybride_reco
 from src.models.train_model_svd import load_svd_model
 
 # Cration of logger object
-logger = logging.getLogger(__name__)
-logging.basicConfig(filename='./app/logs/api_log.log', level=logging.INFO)
+log_file_path = '/app/api_directory/logs/api_log.log'
 
 app = FastAPI(
     title="Movie Recommandation's API",
@@ -43,7 +39,6 @@ app.add_middleware(
 )
 
 svd_model = None
-df_ratings = None
 
 def load_svd_model_sync():
     return load_svd_model() 
@@ -60,33 +55,34 @@ async def startup_event():
 
 @app.get("/")
 async def read_root():
+    with open(log_file_path, 'a') as file:
+        file.write("Root endpoint accessed\n")
     model_status = "Model Loaded" if svd_model else "Model Not Loaded"
     return {"model_status": model_status}
 
 # Log Middleware
+@app.middleware("http")
 async def log_requests(request: Request, call_next):
     start_time = datetime.utcnow()
-
     user_id = None
 
-    # Extraction du user_id pour les requêtes GET et POST
+    # Extract user_id from request
     if request.method in ["POST", "PUT"]:
         try:
             request_body = await request.json()
             user_id = request_body.get("user_id")
         except Exception:
             pass
-
-    if request.method == "GET":
+    elif request.method == "GET":
         user_id = request.query_params.get("user_id")
 
-    # Extraction du user_id à partir du JWT si aucun user_id n'a été trouvé
+    # Extract user_id from JWT if not found in request
     if not user_id:
         auth_header = request.headers.get("Authorization")
         if auth_header and auth_header.startswith("Bearer "):
             token = auth_header.split(" ")[1]
             try:
-                payload = decode_jwt(token)  # Assurez-vous que la fonction decode_jwt retourne le payload
+                payload = decode_jwt(token)
                 user_id = payload.get("user_id")
             except Exception:
                 pass
@@ -95,14 +91,12 @@ async def log_requests(request: Request, call_next):
 
     process_time = datetime.utcnow() - start_time
 
-    logger.info({
-        "timestamp": start_time.isoformat(),
-        "user_id": user_id,
-        "request_path": request.url.path,
-        "request_method": request.method,
-        "response_status_code": response.status_code,
-        "process_time": process_time.total_seconds()
-    })
+    with open(log_file_path, 'a') as file:
+        file.write(f"{start_time.isoformat()} - user_id: {user_id}, "
+                   f"path: {request.url.path}, "
+                   f"method: {request.method}, "
+                   f"status_code: {response.status_code}, "
+                   f"process_time: {process_time.total_seconds()}\n")
 
     return response
 

@@ -150,7 +150,7 @@ services:
     container_name: api_docker 
     volumes:
       - ./src:/app/src
-      - ./api_directory/logs/:/app/logs/
+      - ./api_directory/logs/:/app/api_directory/logs/
     ports:
       - "8000:8000"
     environment:
