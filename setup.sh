@@ -2,6 +2,8 @@
 # Arrêter le script si une commande échoue
 set -e
 
+mkdir ./MLflow
+mkdir ./cache
 # Définir la variable d'environnement
 export MLFLOW_BACKEND_URI="./MLflow"
 echo "MLFLOW_BACKEND_URI définie à $MLFLOW_BACKEND_URI"
