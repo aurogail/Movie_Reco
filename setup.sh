@@ -29,19 +29,15 @@ docker-compose up --build -d
 
 # Exécuter des commandes SQL pour initialiser la base de données
 set -a; source .env; set +a
-docker container exec -e PGPASSWORD="$POSTGRES_PASSWORD" -it airflow_scheduler psql -h 
-postgres-db -U admin -d recofilm_db -f ./src/data/db/drop_database.pgsql
+docker container exec -e PGPASSWORD="$POSTGRES_PASSWORD" -it airflow_scheduler psql -h postgres-db -U admin -d recofilm_db -f ./src/data/db/drop_database.pgsql
 # Copie le backup database dans le volume pg_project_data
-docker container exec -it rclone_docker rclone copyto 
-recofilm:recofilm_db/recofilm_gdrive_300K.sql db/recofilm_gdrive.sql -vv
+docker container exec -it rclone_docker rclone copyto recofilm:recofilm_db/recofilm_gdrive_300K.sql db/recofilm_gdrive.sql -vv
 
 # Restaure la DB
-docker container exec -it postgres_db pg_restore -U admin -d recofilm_db -F c 
-var/lib/postgresql/data/db/recofilm_gdrive.sql
+docker container exec -it postgres_db pg_restore -U admin -d recofilm_db -F c var/lib/postgresql/data/db/recofilm_gdrive.sql
 
 # Vérifier la DB
-docker container exec -it -e PGPASSWORD="$POSTGRES_PASSWORD" airflow_scheduler psql -h 
-postgres-db -U admin -d recofilm_db -c "SELECT COUNT(*) FROM ratings;"
+docker container exec -it -e PGPASSWORD="$POSTGRES_PASSWORD" airflow_scheduler psql -h postgres-db -U admin -d recofilm_db -c "SELECT COUNT(*) FROM ratings;"
 
 # Unpause du DAG
 echo "Activation du DAG train_model dans Airflow..."

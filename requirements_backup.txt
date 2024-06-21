@@ -14,12 +14,12 @@ requests
 click
 python-dotenv
 pandas
-scikit-surprise
+#scikit-surprise
 pytest
 psycopg2-binary
 fastapi
 httpx
 pyjwt
-httptools==0.1.* 
+#httptools==0.1.* 
 uvicorn
 SQLAlchemy

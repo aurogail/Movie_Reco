@@ -8,7 +8,7 @@ from api_directory.preferences import get_user_preferences
 from api_directory.generate_token import *
 sys.path.append('../src')
 from src.models.content_predict import *
-from src.models.collab_predict import collab_reco, generate_new_recommendations
+from src.models.collab_predict import collab_reco
 from src.models.hybrid_predict import hybride_reco
 from src.models.train_model_svd import load_svd_model
 
@@ -159,7 +159,7 @@ async def welcome(user_id: int = Depends(jwt_bearer)):
     return {"message": f"Welcome {user_id}"}
 
 @app.get("/recommendations", name='Collaborative Filtering Recommandations', tags=['Recommandations'])
-async def get_recommendations(user_id: int = Depends(jwt_bearer), svd_model=svd_model):
+async def get_recommendations(user_id: int = Depends(jwt_bearer)):
     """
     Description:
     This endpoint retrieves personalized movie recommendations for the authenticated user based on collaborative filtering.
@@ -210,7 +210,7 @@ async def get_preferences(user_id: int = Depends(jwt_bearer)):
 '''
 
 @app.post("/hybrid", name='Hybrid Filtering Recommandations', tags=['Recommandations'])
-async def hybrid_reco(request: HybridRecoRequest, user_id: int = Depends(jwt_bearer), svd_model=svd_model):
+async def hybrid_reco(request: HybridRecoRequest, user_id: int = Depends(jwt_bearer)):
     """
     Description:
     This endpoint retrieves personalized movie recommendations for the authenticated user based on content-based filtering.

@@ -92,7 +92,7 @@ Project Organization
     │                         generated with `pip freeze > requirements.txt`
     ├── requirements_backup.txt
     ├── setup.py.txt
-
+    └── setup.sh
 ------------
 
 ## Steps to follow 
@@ -108,39 +108,25 @@ Convention : All python scripts must be run from the root specifying the relativ
 
     `./my_env/Scripts/activate`
 
-###   Install the packages from requirements.txt  (You can ignore the warning with "setup.py")
+### 2- Make sure to be at the root of the project and Execute setup.sh to install and start the application
 
-    `pip install -r .\requirements.txt`
+    `chmod +x setup.sh`
+    `./setup.sh`
 
-### 2- Execute import_raw_data.py to import the 4 datasets (say yes when it asks you to create a new folder)
+It may take a few minutes
 
-    `python .\data\import_raw_data.py` 
+### 3- Access the different UI on a navigator
+    - mlflow on http://localhost:5001
+    - api on http://localhost:8000  
+    - airflow webserver on http://localhost:8080
+        credentials = admin/admin
+    - prometheus on http://localhost:9090
+    - grafana on http://localhost:3000
+        credentials = admin/admin
 
-### 3- Execute make_dataset.py initializing `./data/raw` as input file path and `./data/processed` as output file path.
-
-    `python .\data\make_dataset.py`
-
-### 4- Execute build_features.py to preprocess the data (this can take a while)
-
-    `python .\features\build_features.py`
-
-### 5- Execute train_model.py to train the model
-
-    `python .\models\train_model.py`
-
-### 5- Finally, execute predict_model.py file to make the predictions (by default you will be printed predictions for the first 5 users of the dataset). 
-
-    `python .\models\predict_model.py`
-
-### Note that we have 10 recommandations per user
 
 <p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
 
-
-# To launch the API
-
-For now, you need to be in project_root, and execute the following command line:
-    `uvicorn src.api_directory.api:app --reload`
 
 Example of possible requests: 
 # /login
@@ -156,4 +142,4 @@ Example of possible requests:
 `curl -X GET "http://localhost:8000/preferences" -H "Authorization: Bearer <token>"`
 
 # /hybrid
-`curl -X POST "http://localhost:8000/hybrid" -H "Authorization: Bearer <token>" -H "Content-Type: application/json" -d '{"titre": "Braveheart (1995)"}`
+`curl -X POST "http://localhost:8000/hybrid" -H "Authorization: Bearer <token>" -H "Content-Type: application/json" -d '{"titre": "Toy Story (1995)"}`
