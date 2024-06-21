@@ -110,7 +110,7 @@ Convention : All python scripts must be run from the root specifying the relativ
 
     `./my_env/Scripts/activate`
 
-### 2- Make sure to be at the root of the project and Execute setup.sh to install and start the application
+### 2- Ensure you are at the root of the project and run setup.sh to install and start the application
 
     `chmod +x setup.sh`
     `./setup.sh`
