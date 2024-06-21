@@ -16,9 +16,9 @@ Project Organization
     │   ├── preferences.py
     │   └── requests.txt
     │
-    ├── cache    
-    │
-    ├── logs               <- Logs from training and predicting
+    ├── grafana
+    │   ├── dashboards     <- Contains custom dashboard to monitor Postgres database
+    │   └── datasources    <- Setup Prometheus datasource
     │
     ├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
     │                         the creator's initials, and a short `-` delimited description, e.g.
@@ -28,9 +28,6 @@ Project Organization
     │
     ├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
     │   └── figures        <- Generated graphics and figures to be used in reporting
-    │
-    ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
-    │                         generated with `pip freeze > requirements.txt`
     │
     ├── src                <- Source code for use in this project.
     │   ├── __init__.py    <- Makes src a Python module
@@ -59,6 +56,19 @@ Project Organization
     │   └── config         <- Describe the parameters used in train_model.py and predict_model.py
     │
     ├── tests              <- Unit tests
+    │
+    ├── alertmanager.yml       <- Setup of Prometheus Alerts Management
+    │
+    ├── Dockerfile             <- Dockerfile to create Docker Image of the Recofilm Project
+    │
+    ├── docker-compose.yml     <- docker-compose configuration file that contains all dockerized services 
+    │
+    ├── prometheus.yml         <- Setup of Prometheus Exporter Jobs
+    │
+    ├── prometheus_rules.yml   <- Setup of Prometheus Rules to generate Alerts
+    │
+    ├── requirements.txt       <- The requirements file for reproducing the analysis environment, e.g.
+                                  generated with `pip freeze > requirements.txt`
     
 
 ------------
