@@ -12,7 +12,7 @@ import time
 import sys
 
 sys.path.append('src')
-from src.models.load_svd_data import load_and_prepare_data, load_and_prepare_data_from_db
+from src.models.load_svd_data import load_and_prepare_data_from_db
 
 cachedir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../cache'))
 os.makedirs(cachedir, exist_ok=True)
@@ -62,7 +62,6 @@ def evaluate_svd_model(measures=['rmse', 'mae'], cv=5):
     #return svd, cv_results
 
 
-#@memory.cache
 def train_svd_model():
     """
     Description:
@@ -146,7 +145,7 @@ def train_svd_model():
     # return svd_model
 
 @memory.cache
-def load_svd_model(filepath="src/models/svd_model.pkl"):
+def load_svd_model(filepath="./src/models/svd_model.pkl"):
     """
     Description:
     This function loads a previously trained SVD model from a file and returns it.
@@ -158,7 +157,7 @@ def load_svd_model(filepath="src/models/svd_model.pkl"):
     - SVD: The loaded SVD model.
     """
     
-    with open("src/models/svd_model.pkl", "rb") as filehandler:
+    with open(filepath, "rb") as filehandler:
         return pickle.load(filehandler)
 
 if __name__ == "__main__":

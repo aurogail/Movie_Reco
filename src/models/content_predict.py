@@ -6,21 +6,31 @@ sys.path.append('src')
 import os
 from src.features.build_tfidf_matrix import calculer_matrice_tfidf
 
+<<<<<<< HEAD
 # Load the DataFrame containing movie tags
 # df_content_tags = pd.read_csv("src/data/interim/movies_tags.csv")
 # Create an index series
 # df_content_tags = pd.read_csv("../../tests/fixtures/movies_tags_test.csv")
+=======
+>>>>>>> ag_preprod
 
 def is_running_under_pytest():
     return 'pytest' in sys.modules
 
 if is_running_under_pytest():
-    df_content_tags = pd.read_csv("tests/fixtures/movies_tags_test.csv")   # pour les tests
+    df_content_tags = pd.read_csv("./tests/fixtures/movies_tags_test.csv")   # pour les tests
 else:
+<<<<<<< HEAD
     df_content_tags = pd.read_csv("src/data/interim/movies_tags.csv")
 
 indices = pd.Series(range(0, len(df_content_tags)), index=df_content_tags.title)
 
+=======
+    df_content_tags = pd.read_csv("./src/data/interim/movies_tags.csv")
+
+# Create an index series
+indices = pd.Series(range(0, len(df_content_tags)), index=df_content_tags.title)
+>>>>>>> ag_preprod
 
 def content_based_reco(titre, num_recommendations=10):
     """
