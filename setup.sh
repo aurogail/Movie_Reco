@@ -1,20 +1,14 @@
 #!/bin/bash
 # Arrêter le script si une commande échoue
 set -e
-'''
-# Create virtual env and activate it
-python -m venv env_movie_reco
-./env_movie_reco/Scripts/activate
-echo "Environnement virtuel créé"
-'''
+
 # Définir la variable d'environnement
-export MLFLOW_TRACKING_URI="./MLflow/mlruns"
 export MLFLOW_BACKEND_URI="./MLflow"
-echo "MLFLOW_TRACKING_URI définie à $MLFLOW_TRACKING_URI"
+echo "MLFLOW_BACKEND_URI définie à $MLFLOW_BACKEND_URI"
 
 # Installer les dépendances
 echo "Installation des dépendances..."
-pip install -r ./requirements.txt
+pip install -r ./requirements_backup.txt
 
 # Exécution des scripts pour les données
 echo "Importation des données brutes..."
@@ -28,15 +22,6 @@ python ./src/data/make_dataset.py "$input_filepath" "$output_filepath"
 # Exécution des scripts pour les features
 echo "Construction des features..."
 python ./src/features/build_features.py
-
-echo "Extraction des features de contenu..."
-python ./src/features/content_features.py
-
-echo "Construction de la matrice TF-IDF..."
-python ./src/features/build_tfidf_matrix.py
-
-echo "Entrainement et sauvegarde du model..."
-python ./src/models/train_model_svd.py
 
 # Démarrage des services Docker
 echo "Démarrage des services Docker..."
@@ -57,6 +42,25 @@ var/lib/postgresql/data/db/recofilm_gdrive.sql
 # Vérifier la DB
 docker container exec -it -e PGPASSWORD="$POSTGRES_PASSWORD" airflow_scheduler psql -h 
 postgres-db -U admin -d recofilm_db -c "SELECT COUNT(*) FROM ratings;"
+
+# Unpause du DAG
+echo "Activation du DAG train_model dans Airflow..."
+docker exec -it airflow_webserver airflow dags unpause train_model
+
+# Triggering du DAG
+echo "Déclenchement du DAG train_model dans Airflow..."
+docker exec -it airflow_webserver airflow dags trigger train_model
+
+# Creation de movies_tags.csv (peut prendre quelques minutes)
+echo "Extraction des features de contenu..."
+docker exec -it airflow_webserver python ./src/features/content_features.py
+
+echo "Construction de la matrice TF-IDF..."
+docker exec -it airflow_webserver python ./src/features/build_tfidf_matrix.py
+
+# Relancer le conteneur api_docker
+echo "Relance du conteneur api_docker..."
+docker-compose up -d api
 
 echo "Prêt à être utilisé."
 

@@ -225,6 +225,7 @@ services:
     volumes:
       - ./src:/app/src
       - ./api_directory/logs/:/app/api_directory/logs/
+      - ./cache:/app/cache
     ports:
       - "8000:8000"
     environment:
