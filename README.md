@@ -1,7 +1,7 @@
-Project Name
+Movie's Recommendations 
 ==============================
 
-This project is a starting Pack for MLOps projects based on the subject "movie_recommandation". It's not perfect so feel free to make some modifications on it.
+This project is a starting Pack for MLOps projects based on the subject "movie_recommandation". 
 
 Project Organization
 ------------
@@ -10,56 +10,88 @@ Project Organization
     ├── README.md          <- The top-level README for developers using this project.
     │
     ├── api_directory      <- Scripts to execute the API
-    │   ├── api_requirements.txt
-    │   ├── api.py
-    │   ├── generate_token.py 
-    │   ├── preferences.py
-    │   └── requests.txt
+    │   ├── logs
+    │   │   └── api_log.log     <- Logs from api calls
+    │   ├── api.py              <- Main api file
+    │   ├── generate_token.py   <- Generate and decode token for authentication
+    │   ├── preferences.py      <- Generate top 3 genres for a user
+    │   └── requests.txt        <- Few curl requests for api's routes
     │
-    ├── cache    
+    ├── cache             
     │
-    ├── logs               <- Logs from training and predicting
+    ├── dockerfiles             <- Dockerfiles used in docker-compose
+    │   ├── Dockerfile          
+    │   ├── Dockerfile_api   
+    │   ├── Dockerfile_backup    
+    │   └── Dockerfile_mlflow     
     │
-    ├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
-    │                         the creator's initials, and a short `-` delimited description, e.g.
-    │                         `1.0-jqp-initial-data-exploration`.
+    ├── grafana                 <- Ressources used for grafana monitoring
+    │   ├── dashboards  
+    │   └── datasources     
     │
-    ├── references         <- Data dictionaries, manuals, and all other explanatory materials.
+    ├── MLflow                  <- All mlflow runs and artifacts
     │
-    ├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
-    │   └── figures        <- Generated graphics and figures to be used in reporting
+    ├── notebooks               <- Jupyter notebooks
     │
-    ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
-    │                         generated with `pip freeze > requirements.txt`
+    ├── references              <- Data dictionaries, manuals, and all other explanatory materials.
     │
-    ├── src                <- Source code for use in this project.
-    │   ├── __init__.py    <- Makes src a Python module
-    │   ├── dags           <- Contains Airflow DAGs
-    │   ├── data           <- Scripts to download or generate data
-    │   │   ├── db
-    │   │   │   └── initialize_database.py    
-    │   │   ├── interim                     <- Intermediate data that has been transformed.
-    │   │   ├── processed                   <- The final, canonical data sets for modeling.
-    │   │   ├── raw                         <- The original, immutable data dump.
+    ├── reports                 <- Generated analysis as HTML, PDF, LaTeX, etc.
+    │   └── figures             <- Generated graphics and figures to be used in reporting
+    │
+    ├── src                     <- Source code for use in this project
+    │   ├── config              <- Rclone configuration file
+    │   ├── dags                <- Contains Airflow DAGs
+    │   ├── data                <- Scripts to download or generate data
+    │   │   ├── db              <- Scripts to generate postgres database
+    │   │   │   ├── initialize_database.py   
+    │   │   │   ├── drop_database.pgsql                     
+    │   │   │   ├── initialize_database.pgsql 
+    │   │   │   └── databas_functions.py   
+    │   │   ├── interim                     <- Intermediate data that has been transformed
+    │   │   ├── raw                         <- The original, immutable data dump
     │   │   ├── check_structure.py    
     │   │   ├── import_raw_data.py 
     │   │   └── make_dataset.py
     │   │
     │   ├── features       <- Scripts to turn raw data into features for modeling
+    │   │   ├── build_features.py
     │   │   ├── content_features.py
     │   │   └── build_tfidf_matrix.py
     │   │
-    │   ├── models         <- Scripts to train models and then use trained models to make
-    │   │   │                 predictions
-    │   │   ├── predict_model.py
-    │   │   └── train_model.py
+    │   ├── models         <- Scripts to train models and then use trained models to make predictions
+    │   │   │                 
+    │   │   ├── temp       <- Temporary csv files for predictions
+    │   │   ├── collab_predict.py                   <- Predictions with collaborative filtering model (SVD)
+    │   │   ├── content_predict.py                  <- Predictions with content based model
+    │   │   ├── grid_seacrh_svd.py                  <- Grid-Search on SVD model
+    │   │   ├── hybrid_predict.py                   <- Predictions with hybrid model
+    │   │   ├── item_id_mapping.csv
+    │   │   ├── load_svd_data.py                    
+    │   │   ├── train_model_svd.py                  <- Train and evaluate SVD model
+    │   │   ├── train_model_test_surprise.py
+    │   │   └── user_id_mapping.csv
     │   │
-    │   ├── visualization  <- Scripts to create exploratory and results oriented visualizations
-    │   │   └── visualize.py
-    │   └── config         <- Describe the parameters used in train_model.py and predict_model.py
+    │   └── visualization  <- Scripts to create exploratory and results oriented visualizations
+    │         └── visualize.py
     │
-    ├── tests              <- Unit tests
-    
+    ├── tests               <- Unit tests
+    │   ├── fixtures              
+    │   ├── test_api        <- Unitest for api
+    │   ├── test_data       <- Unitest for database
+    │   ├── test_features   <- Unitest for features
+    │   └── test_models     <- Unitest for models
+    │
+    ├── .dockerignore 
+    ├── .gitignore 
+    ├── .env 
+    ├── alertmanager.yml
+    ├── prometheus_rules.yml
+    ├── prometheus.yml
+    ├── pytest.ini
+    ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
+    │                         generated with `pip freeze > requirements.txt`
+    ├── requirements_backup.txt
+    ├── setup.py.txt
 
 ------------
 

@@ -36,6 +36,7 @@ services:
 
   postgres_exporter:
     image: quay.io/prometheuscommunity/postgres-exporter:latest
+    container_name: postgres_exporter
     env_file:
       - .env
     environment:
@@ -49,6 +50,7 @@ services:
 
   alertmanager:
     image: prom/alertmanager:latest
+    container_name: alertmanager
     volumes:
       - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml
     ports:
@@ -58,6 +60,7 @@ services:
 
   prometheus:
     image: prom/prometheus:latest
+    container_name: prometheus_docker
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
       - ./prometheus_rules.yml:/etc/prometheus/prometheus_rules.yml
@@ -70,6 +73,7 @@ services:
 
   grafana:
     image: grafana/grafana:latest
+    container_name: grafana_docker
     ports:
       - "3000:3000"
     networks:
@@ -83,6 +87,7 @@ services:
 
   cadvisor:
     image: google/cadvisor:latest
+    container_name: cadvisor
     ports:
       - "8081:8080"
     volumes:
@@ -94,6 +99,7 @@ services:
 
   node-exporter:
     image: prom/node-exporter:latest
+    container_name: node_exporter
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro

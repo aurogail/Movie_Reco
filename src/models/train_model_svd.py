@@ -165,7 +165,7 @@ if __name__ == "__main__":
     try:
         train_svd_model()
         logger.info("Le modèle SVD a été entraîné et sauvegardé avec succès.")
-    
+        load_svd_model()
     except Exception as e:
         # Handle the exception
         logger.info(f"An error occurred: {e}")
