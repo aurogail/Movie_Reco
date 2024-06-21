@@ -25,9 +25,9 @@ Project Organization
     │   ├── Dockerfile_backup    
     │   └── Dockerfile_mlflow     
     │
-    ├── grafana                 <- Ressources used for grafana monitoring
-    │   ├── dashboards  
-    │   └── datasources     
+    ├── grafana                 
+    │   ├── dashboards          <- Contains custom dashboard to monitor Postgres database
+    │   └── datasources         <- Setup Prometheus datasource
     │
     ├── MLflow                  <- All mlflow runs and artifacts
     │
@@ -48,6 +48,7 @@ Project Organization
     │   │   │   ├── initialize_database.pgsql 
     │   │   │   └── databas_functions.py   
     │   │   ├── interim                     <- Intermediate data that has been transformed
+    │   │   ├── processed                   <- The final, canonical data sets for modeling.
     │   │   ├── raw                         <- The original, immutable data dump
     │   │   ├── check_structure.py    
     │   │   ├── import_raw_data.py 
@@ -84,15 +85,16 @@ Project Organization
     ├── .dockerignore 
     ├── .gitignore 
     ├── .env 
-    ├── alertmanager.yml
-    ├── prometheus_rules.yml
-    ├── prometheus.yml
+    ├── alertmanager.yml            <- Setup of Prometheus Alerts Management
+    ├── docker-compose.yml          <- docker-compose configuration file that contains all dockerized services 
+    ├── prometheus_rules.yml        <- Setup of Prometheus Rules to generate Alerts
+    ├── prometheus.yml              <- Setup of Prometheus Exporter Jobs
     ├── pytest.ini
-    ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
+    ├── requirements.txt            <- The requirements file for reproducing the analysis environment, e.g.
     │                         generated with `pip freeze > requirements.txt`
     ├── requirements_backup.txt
     ├── setup.py.txt
-    └── setup.sh
+    └── setup.sh                    <- The file used to launch the application
 ------------
 
 ## Steps to follow 
