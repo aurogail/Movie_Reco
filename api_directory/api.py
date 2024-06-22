@@ -15,6 +15,10 @@ from src.models.train_model_svd import load_svd_model
 # Cration of logger object
 log_file_path = './api_directory/logs/api_log.log'
 
+log_dir = os.path.dirname(log_file_path)
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
+
 app = FastAPI(
     title="Movie Recommandation's API",
     description="API powered by FastAPI",
