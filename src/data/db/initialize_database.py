@@ -74,7 +74,7 @@ mapping_gtags = {
     'tag': 'tag'
     }
 
-init_csv_to_sql_2(table_name="genome_tags", csv_path="../raw/genome-tags.csv", mapping=mapping_gtags)
+init_csv_to_sql(table_name="genome_tags", csv_path="../raw/genome-tags.csv", mapping=mapping_gtags)
 
 
 ### INSERT genome-scores.csv to recofilm_db > genome_scores
