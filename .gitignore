@@ -90,6 +90,9 @@ src/models/*.pkl
 src/models/*.csv
 src/models/temp/
 
+# exclude logs
+src/logs
+
 # Mac OS-specific storage files
 .DS_Store
 
