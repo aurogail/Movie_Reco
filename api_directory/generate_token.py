@@ -77,7 +77,7 @@ def decode_jwt(token: str):
     except jwt.JWTError:
         return None
 
-class JWTBearer:
+class JWTBearer(HTTPBearer):
     """
     Description:
     Class for JWT token authentication.
@@ -98,7 +98,7 @@ class JWTBearer:
           is invalid or expired. Default is True.
         """
 
-        self.auth = HTTPBearer(auto_error=auto_error)
+        super(JWTBearer, self).__init__(auto_error=auto_error)
 
     async def __call__(self, request: Request):
         """
@@ -114,7 +114,7 @@ class JWTBearer:
         """
 
         # Extract the credentials (JWT token) from the request using the HTTPBearer authentication
-        credentials: HTTPAuthorizationCredentials = await self.auth(request)
+        credentials: HTTPAuthorizationCredentials = await super(JWTBearer, self).__call__(request)
         if credentials:
             # Check if the token scheme is "Bearer"
             if not credentials.scheme == "Bearer":
