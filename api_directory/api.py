@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from datetime import datetime
 import asyncio
 from pydantic import BaseModel
@@ -31,8 +32,7 @@ app = FastAPI(
     {
         'name':'Recommandations',
         'description': 'functions returning a recommandation'
-    }
-])
+    }])
 
 # Add CORS to API
 app.add_middleware(
@@ -105,7 +105,7 @@ async def log_requests(request: Request, call_next):
     return response
 
 # Object containing JWTBearer class from api_directory/generate_token.py
-jwt_bearer = JWTBearer()
+jwt_bearer = JWTBearer(HTTPBearer)
 
 # Definition of BaseModel class
 class UserLogin(BaseModel):
