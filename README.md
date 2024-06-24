@@ -100,7 +100,6 @@ Project Organization
 ## Steps to follow 
 
 Convention : All python scripts must be run from the root specifying the relative file path.
-[Update Charles]: To make it work, I had to execute the line commands from src directory
 
 ### 1- Create a virtual environment using Virtualenv.
 
@@ -113,7 +112,12 @@ Convention : All python scripts must be run from the root specifying the relativ
 ### 2- Ensure you are at the root of the project and run setup.sh to install and start the application
 
     `chmod +x setup.sh`
-    `./setup.sh`
+
+    For MAC users :
+    `./setup_mac.sh`
+
+    For Windows users using a WSL Linux distribution
+    `bash setup_linux_wsl.sh`
 
 It may take a few minutes
 

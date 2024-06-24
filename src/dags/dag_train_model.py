@@ -5,7 +5,6 @@ from src.models.train_model_svd import train_svd_model
 from datetime import datetime, timedelta
 import sys
 
-# Add the tests directory to the Python path
 sys.path.append('/opt/airflow/src/models')
 
 default_args = {

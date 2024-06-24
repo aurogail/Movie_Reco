@@ -17,7 +17,7 @@ COPY setup.py .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY api_directory/ api_directory/
-COPY cache/ cache/
+#COPY cache/ cache/
 
 EXPOSE 8000
 

@@ -5,7 +5,6 @@ from src.models.train_model_svd import evaluate_svd_model
 from datetime import datetime, timedelta
 import sys
 
-# Add the tests directory to the Python path
 sys.path.append('/opt/airflow/src/models')
 
 default_args = {
@@ -30,7 +29,7 @@ my_dag = DAG(
 )
 
 task_1 = PythonOperator(
-    task_id='train_model',
+    task_id='evaluate_model',
     python_callable=evaluate_svd_model,
     dag=my_dag
 )

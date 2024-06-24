@@ -17,10 +17,6 @@ services:
   postgres-db:
     image: postgres:16
     container_name: postgres_db
-    # depends_on:
-    #     rclone:
-    #       condition: service_healthy
-    # command: ["pg_restore", "-U", "admin", "-d", "recofilm_db", "-F", "c", "var/lib/postgresql/data/recofilm_gdrive.sql"]
     env_file:
       - .env
     volumes:
