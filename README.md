@@ -20,9 +20,8 @@ Project Organization
     ├── cache             
     │
     ├── dockerfiles             <- Dockerfiles used in docker-compose
-    │   ├── Dockerfile          
-    │   ├── Dockerfile_api   
-    │   ├── Dockerfile_backup    
+    │   ├── Dockerfile          <- Dockerfile used to create project image used for Airflow services
+    │   ├── Dockerfile_api
     │   └── Dockerfile_mlflow     
     │
     ├── grafana                 
@@ -90,9 +89,9 @@ Project Organization
     ├── prometheus_rules.yml        <- Setup of Prometheus Rules to generate Alerts
     ├── prometheus.yml              <- Setup of Prometheus Exporter Jobs
     ├── pytest.ini
-    ├── requirements.txt            <- The requirements file for reproducing the analysis environment, e.g.
-    │                         generated with `pip freeze > requirements.txt`
-    ├── requirements_backup.txt
+    ├── requirements.txt                <- The requirements file for reproducing the analysis environment
+    ├── requirements_wo_surprise.txt    <- This requirements file is only used for Github Actions because of 
+    │                                   the Scikit Surprise package that does not install properly via pip
     ├── setup.py.txt
     └── setup.sh                    <- The file used to launch the application
 ------------
