@@ -110,12 +110,12 @@ Convention : All python scripts must be run from the root specifying the relativ
 
 ### 2- Ensure you are at the root of the project and run setup.sh to install and start the application
 
-    `chmod +x setup.sh`
-
     For MAC users :
+    `chmod +x setup_mac.sh`
     `./setup_mac.sh`
 
     For Windows users using a WSL Linux distribution
+    `chmod +x setup_linux_wsl.sh`
     `bash setup_linux_wsl.sh`
 
 It may take a few minutes
@@ -142,9 +142,6 @@ Example of possible requests:
 
 # /recommendations
 `curl -X GET "http://localhost:8000/recommendations" -H "Authorization: Bearer <token>"`
-
-# /preferences
-`curl -X GET "http://localhost:8000/preferences" -H "Authorization: Bearer <token>"`
 
 # /hybrid
 `curl -X POST "http://localhost:8000/hybrid" -H "Authorization: Bearer <token>" -H "Content-Type: application/json" -d '{"titre": "Toy Story (1995)"}`
