@@ -118,6 +118,9 @@ Convention : All python scripts must be run from the root specifying the relativ
     `chmod +x setup_linux_wsl.sh`
     `bash setup_linux_wsl.sh`
 
+    If ever the sh script fails because of "\r" errors, please switch the .sh file to LF instead of CRLF
+    in "Select End of Line Sequence" option on the bottom right of VS Code and save it.
+    
 It may take a few minutes
 
 ### 3- Access the different UI on a navigator

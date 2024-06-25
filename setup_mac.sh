@@ -4,6 +4,13 @@ set -e
 
 mkdir ./MLflow
 mkdir ./cache
+
+# Créer un fichier .env qui contient les variables d'environnement
+touch .env
+echo POSTGRES_USER=admin >> .env
+echo POSTGRES_PASSWORD=S3cret >> .env
+echo POSTGRES_DB=recofilm_db >> .env
+
 # Définir la variable d'environnement
 export MLFLOW_BACKEND_URI="./MLflow"
 echo "MLFLOW_BACKEND_URI définie à $MLFLOW_BACKEND_URI"
