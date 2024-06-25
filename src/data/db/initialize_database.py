@@ -1,4 +1,4 @@
-from database_functions import execute_pgsql_query, init_csv_to_sql, create_initial_users, get_engine, init_csv_to_sql_2
+from database_functions import execute_pgsql_query, create_initial_users, get_engine, init_csv_to_sql
 
 # Use SQL Alchemy engine
 engine = get_engine()
@@ -38,7 +38,7 @@ mapping_movies = {
     'genres': 'genres'    
     }
 
-init_csv_to_sql_2(table_name="movies", csv_path="../raw/movies.csv", mapping=mapping_movies)
+init_csv_to_sql(table_name="movies", csv_path="../raw/movies.csv", mapping=mapping_movies)
 
 
 # INSERT DISTINCT(userId) from ratings.csv into recofilm_db > users
@@ -54,7 +54,7 @@ mapping_ratings = {
     'timestamp': 'created_at'    
     }
 
-init_csv_to_sql_2(table_name="ratings", csv_path="../raw/ratings.csv", mapping=mapping_ratings)
+init_csv_to_sql(table_name="ratings", csv_path="../raw/ratings.csv", mapping=mapping_ratings)
 
 
 ### INSERT tags.csv to recofilm_db > tags
@@ -65,7 +65,7 @@ mapping_tags = {
     'timestamp': 'created_at'    
     }
 
-init_csv_to_sql_2(table_name="tags", csv_path="../raw/tags.csv", mapping=mapping_tags)
+init_csv_to_sql(table_name="tags", csv_path="../raw/tags.csv", mapping=mapping_tags)
 
 
 ### INSERT genome-tags.csv to recofilm_db > genome_tags
@@ -74,7 +74,7 @@ mapping_gtags = {
     'tag': 'tag'
     }
 
-init_csv_to_sql_2(table_name="genome_tags", csv_path="../raw/genome-tags.csv", mapping=mapping_gtags)
+init_csv_to_sql(table_name="genome_tags", csv_path="../raw/genome-tags.csv", mapping=mapping_gtags)
 
 
 ### INSERT genome-scores.csv to recofilm_db > genome_scores
@@ -84,7 +84,7 @@ mapping_gscores = {
     'relevance': 'relevance' 
     }
 
-init_csv_to_sql_2(table_name="genome_scores", csv_path="../raw/genome-scores.csv", mapping=mapping_gscores)
+init_csv_to_sql(table_name="genome_scores", csv_path="../raw/genome-scores.csv", mapping=mapping_gscores)
 
 
 ### INSERT links.csv to recofilm_db > links
@@ -94,7 +94,7 @@ mapping_links = {
     'tmdbId': 'tmdb_id'
     }
 
-init_csv_to_sql_2(table_name="links", csv_path="../raw/links.csv", mapping=mapping_links)
+init_csv_to_sql(table_name="links", csv_path="../raw/links.csv", mapping=mapping_links)
 
 
 

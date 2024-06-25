@@ -10,7 +10,6 @@ CREATE TABLE users (
 );
 
 CREATE TABLE ratings (
-    /* rating_id   SERIAL PRIMARY KEY, */
     user_id     INTEGER,    
     movie_id    INTEGER,
     rating      DECIMAL(2, 1) CHECK (rating >= 0.0 AND rating <= 5.0),
@@ -20,7 +19,6 @@ CREATE TABLE ratings (
 );
 
 CREATE TABLE links (
-    /* link_id     SERIAL PRIMARY KEY, */
     movie_id    INTEGER,
     imdb_id     INTEGER,
     tmdb_id     INTEGER,
@@ -28,7 +26,6 @@ CREATE TABLE links (
 );
 
 CREATE TABLE tags (
-    /* tag_id      INTEGER PRIMARY KEY, */
     user_id     INTEGER,
     movie_id    INTEGER,
     tag         TEXT,
@@ -49,21 +46,16 @@ CREATE TABLE genome_scores (
     FOREIGN KEY (gtag_id) REFERENCES genome_tags(gtag_id)
 );
 
-CREATE TABLE predicted_ratings (
-    pred_id             SERIAL PRIMARY KEY,
-    predicted_rating    NUMERIC,
-    model               TEXT,
-    feedback            TEXT
-);
-
 CREATE TABLE recommendations (
     reco_id         SERIAL PRIMARY KEY,
-    movie_id        INTEGER,
+    movie_title     VARCHAR(255),
     user_id         INTEGER,  
     reco_type       TEXT,
+    score_content   NUMERIC,
+    score_collab    NUMERIC,
+    score           NUMERIC,
     reco_datetime   TIMESTAMP,
     user_feedback   INTEGER,
-    FOREIGN KEY (movie_id) REFERENCES movies(movie_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 

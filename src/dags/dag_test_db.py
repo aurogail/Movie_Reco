@@ -30,9 +30,9 @@ default_args = {
 }
 
 my_dag = DAG(
-    dag_id='unit_tests',
+    dag_id='db_tests',
     description='runs unit tests',
-    tags=['unit_tests'],
+    tags=['db_tests'],
     schedule_interval='0 0-23/4 * * *',
     default_args={
         'owner': 'airflow',
@@ -41,7 +41,7 @@ my_dag = DAG(
 )
 
 task_1 = PythonOperator(
-    task_id='run_tests',
+    task_id='run_db_tests',
     python_callable=run_tests,
     dag=my_dag
 )

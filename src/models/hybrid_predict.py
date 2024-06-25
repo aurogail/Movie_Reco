@@ -1,11 +1,14 @@
 from sklearn.preprocessing import MinMaxScaler
 import mlflow
 import os
+import time
+import pandas as pd
 import sys
 sys.path.append('src')
-from src.models.content_predict import *
-from src.models.collab_predict import *
+from src.models.content_predict import content_based_reco
+from src.models.collab_predict import collab_reco
 from src.models.train_model_svd import load_svd_model
+from src.data.db.database_functions import get_engine
 
 def hybride_reco(user_id, svd_model, titre, num_recommendations=10, alpha=0.8, n=1000):
     """
@@ -59,7 +62,19 @@ def hybride_reco(user_id, svd_model, titre, num_recommendations=10, alpha=0.8, n
 
         # Save into a temporary csv file
         hybrid_pred_path = os.path.join(temp_dir, "hybrid_pred.csv")
-        rec_combined.head(num_recommendations).to_csv(hybrid_pred_path, index=False)
+        rec_combined = rec_combined.head(num_recommendations)
+        rec_combined.to_csv(hybrid_pred_path, index=False)
+
+        # Insert recommendations into database
+        engine, inspector = get_engine()
+        rec_combined_for_db = rec_combined
+        rec_combined_for_db['user_id'] = user_id
+        rec_combined_for_db['reco_type'] = "hybrid"
+        rec_combined_for_db['reco_datetime'] = pd.Timestamp.now()  # current timestamp
+        rec_combined_for_db['user_feedback'] = None  # default value for user feedback
+        rec_combined_for_db = rec_combined_for_db.rename(columns = {'title': 'movie_title'})
+        rec_combined_for_db = rec_combined_for_db[['movie_title', 'user_id', 'reco_type', 'score_content', 'score_collab', 'score', 'reco_datetime', 'user_feedback']]
+        rec_combined_for_db.to_sql("recommendations", engine, if_exists='append', index=False)
 
         # Log predictions in MLflow
         mlflow.log_param("user_id", user_id)
@@ -67,7 +82,7 @@ def hybride_reco(user_id, svd_model, titre, num_recommendations=10, alpha=0.8, n
         mlflow.log_param("num_recommendations", num_recommendations)
         mlflow.log_artifact(hybrid_pred_path)
 
-    return rec_combined.head(num_recommendations)
+    return rec_combined
 
 
 if __name__ == "__main__":

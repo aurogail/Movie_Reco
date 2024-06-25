@@ -12,7 +12,7 @@ import time
 import sys
 
 sys.path.append('src')
-from src.models.load_svd_data import load_and_prepare_data, load_and_prepare_data_from_db
+from src.models.load_svd_data import load_and_prepare_data_from_db
 
 cachedir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../cache'))
 os.makedirs(cachedir, exist_ok=True)
@@ -40,9 +40,8 @@ def evaluate_svd_model(measures=['rmse', 'mae'], cv=5):
     - dict: A dictionary containing cross-validation results.
     """
     df_surprise,_ = load_and_prepare_data_from_db()
-    #svd = SVD(n_factors=100, n_epochs=30, lr_all=0.01, reg_all=0.05)
-    svd = SVD(n_factors=50, n_epochs=20, lr_all=0.005, reg_all=0.02)
-
+    svd = SVD(n_factors=100, n_epochs=30, lr_all=0.01, reg_all=0.05)
+    
     with mlflow.start_run(run_name="evaluation"):
         cv_results = cross_validate(svd, df_surprise, measures=measures, cv=cv, verbose=True)
         # Log metrics for each measure
@@ -60,10 +59,9 @@ def evaluate_svd_model(measures=['rmse', 'mae'], cv=5):
 
         mlflow.log_params({"n_factors": 100, "n_epochs": 30, "lr_all": 0.01, "reg_all": 0.05})
         mlflow.log_params({"measures": measures, "cv": cv})
-    return svd, cv_results
+    #return svd, cv_results
 
 
-@memory.cache
 def train_svd_model():
     """
     Description:
@@ -147,7 +145,7 @@ def train_svd_model():
     # return svd_model
 
 @memory.cache
-def load_svd_model(filepath="src/models/svd_model.pkl"):
+def load_svd_model(filepath="./src/models/svd_model.pkl"):
     """
     Description:
     This function loads a previously trained SVD model from a file and returns it.
@@ -159,7 +157,7 @@ def load_svd_model(filepath="src/models/svd_model.pkl"):
     - SVD: The loaded SVD model.
     """
     
-    with open("src/models/svd_model.pkl", "rb") as filehandler:
+    with open(filepath, "rb") as filehandler:
         return pickle.load(filehandler)
 
 if __name__ == "__main__":
@@ -167,7 +165,7 @@ if __name__ == "__main__":
     try:
         train_svd_model()
         logger.info("Le modèle SVD a été entraîné et sauvegardé avec succès.")
-    
+        load_svd_model()
     except Exception as e:
         # Handle the exception
         logger.info(f"An error occurred: {e}")

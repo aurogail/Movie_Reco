@@ -53,7 +53,7 @@ def load_and_prepare_data_from_db(rating_scale=(0, 5)):
     engine, inspector = get_engine()
 
     # Read in chunks
-    chunk_size = 500000  # Adjust this size based on your memory capacity
+    chunk_size = 200000  # Adjust this size based on your memory capacity
     chunks = []
 
     query = "SELECT * FROM ratings;"

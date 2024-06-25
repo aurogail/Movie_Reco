@@ -1,7 +1,7 @@
 from airflow import DAG
 from airflow.utils.dates import days_ago
 from airflow.operators.python import PythonOperator
-from src.models.train_model_svd import train_svd_model
+from src.models.train_model_svd import evaluate_svd_model
 from datetime import datetime, timedelta
 import sys
 
@@ -18,10 +18,10 @@ default_args = {
 }
 
 my_dag = DAG(
-    dag_id='train_model',
-    description='train SVD model',
-    tags=['train_model'],
-    schedule_interval='0 2 * * *',
+    dag_id='evaluate_model',
+    description='evaluate SVD model',
+    tags=['evaluate_model'],
+    schedule_interval='0 1 * * *',
     default_args={
         'owner': 'airflow',
         'start_date': days_ago(0, minute=1),
@@ -29,7 +29,7 @@ my_dag = DAG(
 )
 
 task_1 = PythonOperator(
-    task_id='train_model',
-    python_callable=train_svd_model,
+    task_id='evaluate_model',
+    python_callable=evaluate_svd_model,
     dag=my_dag
 )
