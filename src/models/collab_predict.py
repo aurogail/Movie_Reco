@@ -71,33 +71,28 @@ def collab_reco(user_id, svd_model, num_recommendations=10):
         # Sort the predictions by rating in descending order
         predictions_svd.sort_values('note', ascending=False, inplace=True)
 
+         # Filter movies with predicted rating >= 4 to form the pool
+        pool = predictions_svd[predictions_svd['note'] >= 4]
+
+        # If the pool has fewer than the desired number of recommendations, adjust accordingly
+        num_recommendations = min(num_recommendations, len(pool))
+
+        # Select a random sample of the pool
+        recommendations = pool.sample(num_recommendations)
+
+        # Sort the predictions by rating in descending order
+        recommendations.sort_values('note', ascending=False, inplace=True)
+
         # Enregistrer le fichier CSV localement
         collab_pred_path = os.path.join(temp_dir, "collab_pred.csv")
-        predictions_svd.head(num_recommendations).to_csv(collab_pred_path, index=False)
+        recommendations.to_csv(collab_pred_path, index=False)
 
         # Log predictions
         mlflow.log_param("user_id", user_id)
         mlflow.log_param("num_recommendations", num_recommendations)
         mlflow.log_artifact(collab_pred_path)
 
-    return predictions_svd.head(num_recommendations)
-
-def generate_new_recommendations(top_recommendations_collab):
-    """
-    Description:
-    This function generates a new set of collaborative movie recommendations based on the length of previously generated recommendations.
-
-    Args:
-    - top_recommendations_collab (DataFrame): The DataFrame containing the current top collaborative recommendations.
-
-    Returns:
-    - DataFrame: A DataFrame containing the new set of recommended movie titles and their estimated ratings.
-    """
-
-    start_index = len(top_recommendations_collab)
-    new_recommendations = collab_reco(user_id, start_index, num_recommendations=10)
-    
-    return new_recommendations
+    return recommendations
 
 if __name__ == "__main__":
 

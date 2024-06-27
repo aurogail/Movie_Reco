@@ -10,7 +10,7 @@ echo "MLFLOW_BACKEND_URI définie à $MLFLOW_BACKEND_URI"
 
 # Installer les dépendances
 echo "Installation des dépendances..."
-pip install -r ./requirements_backup.txt
+pip install -r ./requirements_wo_surprise.txt
 
 # Exécution des scripts pour les données
 echo "Importation des données brutes..."

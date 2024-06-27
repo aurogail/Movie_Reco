@@ -1,17 +1,19 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPBearer
 from datetime import datetime
+from typing import List, Optional
 import asyncio
+import os
 from pydantic import BaseModel
 import sys
-from api_directory.preferences import get_user_preferences
-from api_directory.generate_token import *
+from api_directory.generate_token import users, JWTBearer, decode_jwt, sign_jwt
 sys.path.append('../src')
-from src.models.content_predict import *
+from src.models.content_predict import indices
 from src.models.collab_predict import collab_reco
 from src.models.hybrid_predict import hybride_reco
 from src.models.train_model_svd import load_svd_model
+from src.models.genres_predict import get_genre_recommendations, all_genres
 
 # Cration of logger object
 log_file_path = './api_directory/logs/api_log.log'
@@ -116,6 +118,13 @@ class HybridRecoRequest(BaseModel):
     ''' Movie title available in dataset '''
     titre: str
 
+class GenresInput(BaseModel):
+    genre1: str
+    genre2: str
+    genre3: str
+    excluded_genres: Optional[List[str]] = None
+
+
 @app.post("/login", name='Generate Token', tags=['Authentication'])
 async def login(user_data: UserLogin):
     """
@@ -190,28 +199,6 @@ async def get_recommendations(user_id: int = Depends(jwt_bearer)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) 
 
-'''
-@app.get("/preferences", name='Top Movie Genres', tags=['Recommandations'])
-async def get_preferences(user_id: int = Depends(jwt_bearer)):
-    """
-    Description:
-    This endpoint retrieves personalized top movie genres for the authenticated user.
-
-    Args:
-    - user_id (int, dependency) : the user_id extracted from the payload of the JWT token sent.
-
-    Returns:
-    - JSON: returns a JSON object containing personalized top movie genres for the user.
-    
-    Raises:
-    - HTTPException(403, details = ["Invalid authentication scheme.", "Invalid token or expired token.", "Invalid authorization code."]): If the token is not valid and the user cannot be authenticated.
-    """
-    # Obtaining top 3 movie genres for the user. The function called is in api_directory/preferences/
-    
-    preferences = get_user_preferences(user_id, "src/data/processed/user_matrix.csv")
-    return {"user_id": user_id, "preferences": preferences}
-
-'''
 
 @app.post("/hybrid", name='Hybrid Filtering Recommandations', tags=['Recommandations'])
 async def hybrid_reco(request: HybridRecoRequest, user_id: int = Depends(jwt_bearer)):
@@ -239,4 +226,41 @@ async def hybrid_reco(request: HybridRecoRequest, user_id: int = Depends(jwt_bea
         return {"user_id": user_id, "recommendations": titles.tolist()}  # Conversion en dictionnaire pour JSON
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) 
+
+
+@app.post("/genre_recommendations", tags=['Recommandations'])
+async def genre_recommendations(genres: GenresInput, user_id: int = Depends(jwt_bearer)):
+    """
+    Description:
+    This endpoint retrieves personalized movie recommendations for the authenticated user based on specified genres and exclusions. Could be used to prevent the cold start.
+
+    Args:
+    - genres (GenresInput, body): The request object containing the three preferred genres and optional excluded genres.
+    - user_id (int, dependency): The user_id extracted from the payload of the JWT token sent for authentication.
+
+    Returns:
+    - JSON: Returns a JSON object containing the user ID and a list of movie recommendations that match the criteria.
+
+    Raises:
+    - HTTPException(404, detail="Genre '{genre}' is not known."): If any of the provided genres or excluded genres are not in the list of known genres.
+    - HTTPException(500, detail=str(e)): For any other internal server errors.
+    """
+    try:
+        # Validate genres
+        for genre in [genres.genre1, genres.genre2, genres.genre3]:
+            if genre.lower() not in all_genres:
+                raise HTTPException(status_code=404, detail=f"Genre '{genre}' is not known.")
         
+        if genres.excluded_genres:
+            for excluded_genre in genres.excluded_genres:
+                if excluded_genre.lower() not in all_genres:
+                    raise HTTPException(status_code=404, detail=f"Excluded genre '{excluded_genre}' is not known.")
+
+        # Retrieve recommendations
+        recommendations = get_genre_recommendations(user_id,genres.genre1,genres.genre2,genres.genre3,genres.excluded_genres)
+        titles = recommendations['title']
+        return {"user_id": user_id, "recommendations": titles.tolist()}
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
