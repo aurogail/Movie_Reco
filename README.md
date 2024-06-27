@@ -64,6 +64,7 @@ Project Organization
     │   │   ├── temp       <- Temporary csv files for predictions
     │   │   ├── collab_predict.py                   <- Predictions with collaborative filtering model (SVD)
     │   │   ├── content_predict.py                  <- Predictions with content based model
+    │   │   ├── genres_predict.py                   <- Predictions based on genres selection
     │   │   ├── grid_seacrh_svd.py                  <- Grid-Search on SVD model
     │   │   ├── hybrid_predict.py                   <- Predictions with hybrid model
     │   │   ├── item_id_mapping.csv
@@ -111,15 +112,18 @@ Convention : All python scripts must be run from the root specifying the relativ
 
 ### 2- Ensure you are at the root of the project and run setup.sh to install and start the application
 
-    `chmod +x setup.sh`
-
     For MAC users :
+    `chmod +x setup_mac.sh`
     `./setup_mac.sh`
 
     For Windows users using a WSL Linux distribution
+    `chmod +x setup_linux_wsl.sh`
     `bash setup_linux_wsl.sh`
 
-It may take a few minutes
+    If ever the sh script fails because of "\r" errors, please switch the .sh file to LF instead of CRLF
+    in "Select End of Line Sequence" option on the bottom right of VS Code and save it.
+    
+    It may take a few minutes
 
 ### 3- Access the different UI on a navigator
     - mlflow on http://localhost:5001
@@ -149,3 +153,6 @@ Example of possible requests:
 
 # /hybrid
 `curl -X POST "http://localhost:8000/hybrid" -H "Authorization: Bearer <token>" -H "Content-Type: application/json" -d '{"titre": "Toy Story (1995)"}`
+
+# /genres_recommendations
+`curl -X POST "http://localhost:8000/genres_recommendations" -H "Authorization: Bearer <token>" -H "Content-Type: application/json" -d '{"genre1": "Animation", "genre2": "Fantasy", "genre3": "Drama", "excluded_genres": ["Horror"]}`

@@ -12,3 +12,6 @@ curl -X GET "http://localhost:8000/preferences" -H "Authorization: Bearer <token
 
 # /hybrid
 curl -X POST "http://localhost:8000/hybrid" -H "Authorization: Bearer <token>" -H "Content-Type: application/json" -d '{"titre": "Toy Story (1995)"}'
+
+# /genres_recommendations
+`curl -X POST "http://localhost:8000/genres_recommendations" -H "Authorization: Bearer <token>" -H "Content-Type: application/json" -d '{"genre1": "Animation", "genre2": "Fantasy", "genre3": "Drama", "excluded_genres": ["Horror"]}`

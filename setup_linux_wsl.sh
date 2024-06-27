@@ -4,6 +4,12 @@ set -e
 mkdir ./MLflow
 mkdir ./cache
 
+# Créer un fichier .env qui contient les variables d'environnement
+touch .env
+echo POSTGRES_USER=admin >> .env
+echo POSTGRES_PASSWORD=S3cret >> .env
+echo POSTGRES_DB=recofilm_db >> .env
+
 # Charger les variables d'environnement du fichier .env
 source .env
 
@@ -55,4 +61,3 @@ docker exec -it airflow_webserver python ./src/features/build_tfidf_matrix.py
 echo "Relance du conteneur api_docker..."
 docker-compose up -d api
 echo "Prêt à être utilisé."
-
