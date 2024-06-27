@@ -122,7 +122,7 @@ Convention : All python scripts must be run from the root specifying the relativ
     If ever the sh script fails because of "\r" errors, please switch the .sh file to LF instead of CRLF
     in "Select End of Line Sequence" option on the bottom right of VS Code and save it.
     
-    It may take a few minutes
+It may take a few minutes
 
 ### 3- Access the different UI on a navigator
     - mlflow on http://localhost:5001
@@ -146,9 +146,6 @@ Example of possible requests:
 
 # /recommendations
 `curl -X GET "http://localhost:8000/recommendations" -H "Authorization: Bearer <token>"`
-
-# /preferences
-`curl -X GET "http://localhost:8000/preferences" -H "Authorization: Bearer <token>"`
 
 # /hybrid
 `curl -X POST "http://localhost:8000/hybrid" -H "Authorization: Bearer <token>" -H "Content-Type: application/json" -d '{"titre": "Toy Story (1995)"}`
